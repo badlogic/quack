@@ -32,6 +32,7 @@
  */
 
 options {
+	LOOKAHEAD = 2;	
 	STATIC = false;
 	UNICODE_INPUT = true;
 	JDK_VERSION = "1.5";
@@ -87,7 +88,8 @@ TOKEN: {
 	< DO: "do" > |
 	< WHILE: "while" > |
 	< FOR: "for" > |
-	< SIZEOF: "sizeof" >
+	< SIZEOF: "sizeof" > |
+	< TYPEOF: "typeof">
 }
 
 // Inbuild Types
@@ -419,7 +421,15 @@ void AddExpression():
 void MultExpression():
 {}
 {
-	PostfixExpression() (("*" | "/" | "%") PostfixExpression())*
+	UnaryExpression() (("*" | "/" | "%") UnaryExpression())*
+}
+
+void UnaryExpression():
+{}
+{
+	PostfixExpression() |
+	("!" | "+" | "-") UnaryExpression() |
+	"typeof" "(" UnaryExpression() ")"
 }
 
 void PostfixExpression():
