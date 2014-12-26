@@ -40,6 +40,9 @@ options {
 PARSER_BEGIN(Parser)
 package com.badlogicgames.quack.parsing;
 
+import com.badlogicgames.quack.ast.*;
+import java.util.*;
+
 public class Parser {
 }
 PARSER_END(Parser)
@@ -242,150 +245,380 @@ TOKEN :
 //===========================================================================
 // Parser
 //===========================================================================
-void CompilationUnit():
-{}
-{
-	ModuleDeclaration()
-	(ImportDeclaration())*	
-	(StructDefinition() | FunctionDefinition())* 
-}
-
-void ModuleName():
-{}
-{
-	<IDENTIFIER> ( "." <IDENTIFIER>)*
-}
-
-void ModuleDeclaration():
-{}
-{
-	"module" ModuleName()
-}
-
-void ImportDeclaration():
-{}
-{
-	"import" ModuleName()
-}
-
-void StructDefinition():
-{}
-{
-	"struct" <IDENTIFIER> "{" 
-		(FieldDeclaration())*
-		(FunctionDefinition())*
-	"}"		
-}
-
-void FieldDeclaration():
-{}
-{
-	"val" <IDENTIFIER> ":" Type() |
-	"var" <IDENTIFIER> ":" Type()
-}
-
-void FunctionDefinition():
-{}
-{
-	"def" <IDENTIFIER> ArgumentList() [":" Type() ] "{"
-		FunctionBody() 
-	"}"
-}
-
-void ArgumentList():
-{}
-{
-	"(" [Argument() ( "," Argument())*] ")"
-}
-
-void Argument():
-{}
-{
-	<IDENTIFIER> ":" Type()
-}
-
-void FunctionBody():
-{}
-{
-	StatementList()
-}
-
-void StatementList():
-{}
-{
-	(Statement())*
-}
-
-void Statement():
-{}
-{
-	VariableDeclaration() |
-	AssignmentOrExpression() |	
-	Block() |
-	IfBlock() |
-	WhileBlock() |
-	ForBlock()
-}
-
-void VariableDeclaration():
-{}
-{
-	"val" <IDENTIFIER> ":" Type() |
-	"var" <IDENTIFIER> ":" Type()
-}
-
-void Block():
-{}
-{
-	"{" StatementList() "}"
-}
-
-void IfBlock():
-{}
-{
-	"if" "(" ")" Block()
-	("elif" "(" ")" Block())*
-	[ "else" Block() ]
-}
-
-void WhileBlock():
-{}
-{
-	"while" "(" ")" Block()
-}
-
-void ForBlock():
-{}
-{
-	"for" "(" ")" Block()
-}
-
-void Type():
-{}
-{
-	"bool" |
-	"u8" | "u16" | "u32" | "u64" |
-	"i8" | "i16" | "i32" | "i64" |
-	"f32" | "f64" |
-	<IDENTIFIER> 
-}
-
-void AssignmentOrExpression():
-{}
-{
-	Expression() [ "=" Expression() ]
-}
-
-void Expression():
-{}
+AstCompilationUnit CompilationUnit():
 {	
-	LogicalExpression()
+	AstModule m;
+	AstImport i;
+	List<AstImport> imports = new ArrayList<AstImport>();
+	AstStruct s;
+	List<AstStruct> structs = new ArrayList<AstStruct>();
+	AstFunction f;
+	List<AstFunction> functions = new ArrayList<AstFunction>();
+}
+{
+	m = ModuleDeclaration()
+	(i=ImportDeclaration() { imports.add(i); })*	
+	(s=StructDefinition() { structs.add(s); } | 
+	 f=FunctionDefinition() { functions.add(f); })* 
+	{
+		AstCompilationUnit cu = new AstCompilationUnit(1, 1); 
+		cu.setModule(m);
+		cu.getImports().addAll(imports);
+		cu.getStructs().addAll(structs);
+		cu.getFunctions().addAll(functions);
+		return cu; 
+	}
+}
+
+String ModuleName():
+{	
+	StringBuilder b = new StringBuilder();
+	Token t;	
+}
+{
+	t=<IDENTIFIER> { b.append(t.image); }
+	( "." t=<IDENTIFIER> { b.append("."); b.append(t.image); } )*
+	{
+		return b.toString();
+	}
+}
+
+AstModule ModuleDeclaration():
+{
+	Token b;
+	String m;
+}
+{
+	b="module" m=ModuleName()
+	{
+		AstModule module = new AstModule(b.beginLine, b.beginColumn);
+		module.setName(m);
+		return module;
+	}
+}
+
+AstImport ImportDeclaration():
+{
+	Token b;
+	String m;
+}
+{
+	b="import" m=ModuleName()
+	{ 
+		AstImport imp = new AstImport(b.beginLine, b.beginColumn);
+		imp.setName(m);
+		return imp; 
+	}
+}
+
+AstStruct StructDefinition():
+{
+	Token b;
+	Token t;
+	AstVariable f;
+	List<AstVariable> fields = new ArrayList<AstVariable>();
+	AstFunction fu;
+	List<AstFunction> functions = new ArrayList<AstFunction>();
+}
+{
+	b = "struct" t = <IDENTIFIER> "{" 
+		(f=FieldDeclaration() {fields.add(f);})*
+		(fu=FunctionDefinition() {functions.add(fu);})*
+	"}"
+	{
+		AstStruct struct = new AstStruct(b.beginLine, b.beginColumn);
+		struct.setName(t.image);
+		struct.getFields().addAll(fields);
+		struct.getFunctions().addAll(functions);
+		return struct;
+	}	
+}
+
+AstVariable FieldDeclaration():
+{	
+	Token b;
+	Token t;
+	AstType ty;
+}
+{
+	(b="val"|b="var") t=<IDENTIFIER> ":" ty=Type()	
+	{
+		AstVariable field = new AstVariable(b.beginLine, b.beginColumn);
+		field.setQualifier(b.image.equals("val")?AstVariable.Qualifier.Val:AstVariable.Qualifier.Var);
+		field.setName(t.image);
+		field.setType(ty);
+		return field;
+	}
+}
+
+AstFunction FunctionDefinition():
+{
+	Token b;
+	Token t;	
+	List<AstArgument> args;
+	AstType rt = null;	
+	List<AstStatement> body;
+}
+{
+	b="def" t=<IDENTIFIER> args=ArgumentList() [":" rt=Type() ] "{"
+		body=FunctionBody() 
+	"}"
+	{
+		AstFunction func = new AstFunction(b.beginLine, b.beginColumn);
+		func.setName(t.image);
+		func.getArguments().addAll(args);
+		func.setReturnType(rt);
+		func.getBody().addAll(body);
+		return func;
+	}
+}
+
+List<AstArgument> ArgumentList():
+{
+	List<AstArgument> args = new ArrayList<AstArgument>();
+	AstArgument a;
+}
+{
+	"(" [a=Argument() {args.add(a);} ( "," a=Argument() {args.add(a);})*] ")"
+	{
+		return args;
+	}
+}
+
+AstArgument Argument():
+{
+	Token t;
+	AstType ty;
+}
+{
+	t=<IDENTIFIER> ":" ty=Type()
+	{
+		AstArgument arg = new AstArgument(t.beginLine, t.beginColumn);
+		arg.setName(t.image);
+		arg.setType(ty);
+		return arg;
+	}
+}
+
+List<AstStatement> FunctionBody():
+{
+	List<AstStatement> stmts;
+}
+{
+	stmts=StatementList()
+	{
+		return stmts;
+	}	
+}
+
+List<AstStatement> StatementList():
+{
+	List<AstStatement> stmts = new ArrayList<AstStatement>();
+	AstStatement s;
+}
+{
+	(s=Statement() {stmts.add(s);})*
+	{
+		return stmts;
+	}
+}
+
+AstStatement Statement():
+{
+	AstStatement s;
+}
+{
+	s=VariableDeclaration() |
+	s=AssignmentOrExpression() |	
+	s=Block() |
+	s=IfBlock() |
+	s=WhileBlock() |
+	s=ForBlock()
+	{
+		return s;
+	}
+}
+
+AstVariable VariableDeclaration():
+{
+	AstVariable v;
+}
+{
+	v=FieldDeclaration()
+	{
+		return v;
+	}
+}
+
+AstBlock Block():
+{
+	Token b;
+	List<AstStatement> stmts;
+}
+{
+	b="{" stmts=StatementList() "}"
+	{
+		AstBlock block = new AstBlock(b.beginLine, b.beginColumn);
+		block.getStatements().addAll(stmts);
+		return block;
+	}
+}
+
+AstIf IfBlock():
+{
+	Token b;
+	AstExpression c;
+	AstBlock trueBlock;
+	Token el;
+	AstBlock elseBlock = null;
+	List<AstElif> elseIfs = new ArrayList<AstElif>();
+	AstElif elif;		
+}
+{
+	b="if" "(" c=Expression() ")" trueBlock=Block()
+	(elif=ElseIfBlock() {elseIfs.add(elif);})*
+	["else" elseBlock=Block() ]
+	{
+		AstIf ifNode = new AstIf(b.beginLine, b.beginColumn);
+		ifNode.setCondition(c);
+		ifNode.setTrueBlock(trueBlock);
+		ifNode.getElseIfs().addAll(elseIfs);
+		ifNode.setElseBlock(elseBlock);
+		return ifNode;
+	}
+}
+
+AstElif ElseIfBlock():
+{
+	Token b;
+	AstExpression c;
+	AstBlock block;
+}
+{
+	b="elif" "(" c=Expression() ")" block=Block() 
+	{
+		AstElif elif = new AstElif(b.beginLine, b.beginColumn);
+		elif.setCondition(c);
+		elif.setBlock(block);
+		return elif;
+	}
+}
+
+AstWhile WhileBlock():
+{
+	Token b;
+	AstExpression c;
+	AstBlock block;
+}
+{
+	b="while" "(" c=Expression() ")" block=Block()
+	{
+		AstWhile whileNode = new AstWhile(b.beginLine, b.beginColumn);
+		whileNode.setCondition(c);
+		whileNode.setBlock(block);
+		return whileNode;
+	}
+}
+
+AstFor ForBlock():
+{
+	Token t;
+	List<AstVariable> i;
+	AstExpression e;
+	List<AstStatement> b;
+	AstBlock block;
+}
+{
+	t="for" "(" i=ForInitializer() ";" e=Expression() ";" b=ForBottom() ")" block=Block()
+	{
+		AstFor forNode = new AstFor(t.beginLine, t.beginColumn);
+		forNode.getInitializers().addAll(i);
+		forNode.setCondition(e);
+		forNode.getBottom().addAll(b);
+		forNode.setBlock(block);
+		return forNode;
+	}
+}
+
+List<AstVariable> ForInitializer():
+{
+	AstVariable var;
+	List<AstVariable> vars = new ArrayList<AstVariable>();
+}
+{
+	[var=VariableDeclaration() {vars.add(var);} ("," var=VariableDeclaration() {vars.add(var);})*]
+	{
+		return vars;
+	}
+}
+
+List<AstStatement> ForBottom():
+{
+	AstExpression e;
+	List<AstStatement> stmts = new ArrayList<AstStatement>();
+}
+{
+	[e=AssignmentOrExpression() {stmts.add(e);} ("," e=AssignmentOrExpression() {stmts.add(e);})*]
+	{
+		return stmts;
+	}
+}
+
+AstType Type():
+{
+	Token t;
+}
+{
+	t="bool" |
+	t="u8" | t="u16" | t="u32" | t="u64" |
+	t="i8" | t="i16" | t="i32" | t="i64" |
+	t="f32" | t="f64" |
+	t=<IDENTIFIER>
+	{
+		AstType type = new AstType(t.beginLine, t.beginColumn);
+		type.setName(t.image);
+		return type;
+	} 
+}
+
+AstExpression AssignmentOrExpression():
+{
+	AstExpression lhs;
+	AstExpression rhs = null;
+}
+{
+	lhs=Expression() [ "=" rhs=Expression() ]
+	{
+		if(rhs != null) {
+			AstAssign assign = new AstAssign(lhs.getLine(), lhs.getCol());
+			assign.setLeftHandSide(lhs);
+			assign.setRightHandSide(rhs);
+			return assign;
+		} else {
+			return lhs;
+		}
+	}
+}
+
+AstExpression Expression():
+{
+	AstExpression e;
+}
+{	
+	e=LogicalExpression()
+	{
+		return e;
+	}
 }
 
 void LogicalExpression():
-{}
 {
-	BitExpression() ( ("||" | "&&") BitExpression() )*
+	AstExpression first;
+	Token op;
+	AstExpression e;
+}
+{
+	first=BitExpression() ( (op="||" | op="&&") e=BitExpression() )*
 }
 
 void BitExpression():

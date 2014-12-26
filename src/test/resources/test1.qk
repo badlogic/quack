@@ -62,4 +62,5 @@ def f() {
 
 def expr() {	
 	b.c.a[0] = -(2)
+	c = fun(a, b, c, q(d | f))
 }
