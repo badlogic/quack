@@ -39,7 +39,7 @@ options {
 PARSER_BEGIN(Parser)
 package com.badlogicgames.quack.parsing;
 
-class Parser {
+public class Parser {
 }
 PARSER_END(Parser)
 
@@ -75,10 +75,30 @@ MORE: {
 
 // Keywords
 TOKEN: {
+	< IMPORT: "import" > |
+	< MODULE: "module" > |
 	< DEF: "def" > |
 	< VAL: "val" > |
 	< VAR: "var" > |	
 	< STRUCT: "struct" >
+}
+
+// Inbuild Types
+TOKEN: {
+	< BOOL: "bool" > |
+
+	< U8: "u8" > |
+	< U16: "u16" > |
+	< U32: "u32" > |
+	< U64: "u64" > |
+	
+	< I8: "i8" > |
+	< I16: "i16" > |
+	< I32: "i32" > |
+	< I64: "i64" > |
+	
+	< F32: "f32" > |
+	< F64: "f64" >
 }
 
 // Literals
@@ -223,3 +243,74 @@ TOKEN :
 //===========================================================================
 // Parser
 //===========================================================================
+void CompilationUnit():
+{}
+{
+	ModuleDeclaration()
+	(ImportDeclaration())*	
+	(StructDefinition() | FunctionDefinition())* 
+}
+
+void ModuleName():
+{}
+{
+	<IDENTIFIER> ( "." <IDENTIFIER>)*
+}
+
+void ModuleDeclaration():
+{}
+{
+	"module" ModuleName()
+}
+
+void ImportDeclaration():
+{}
+{
+	"import" ModuleName()
+}
+
+void StructDefinition():
+{}
+{
+	"struct" <IDENTIFIER> "{" 
+		(FieldDeclaration())*
+		(FunctionDefinition())*
+	"}"		
+}
+
+void FieldDeclaration():
+{}
+{
+	"val" <IDENTIFIER> ":" Type() |
+	"var" <IDENTIFIER> ":" Type()
+}
+
+void FunctionDefinition():
+{}
+{
+	"def" <IDENTIFIER> ArgumentList() [":" Type() ] "{"
+		// Statement()
+	"}"
+}
+
+void ArgumentList():
+{}
+{
+	"(" [Argument() ( "," Argument())*] ")"
+}
+
+void Argument():
+{}
+{
+	<IDENTIFIER> ":" Type()
+}
+
+void Type():
+{}
+{
+	"bool" |
+	"u8" | "u16" | "u32" | "u64" |
+	"i8" | "i16" | "i32" | "i64" |
+	"f32" | "f64" |
+	<IDENTIFIER> 
+}

@@ -1,0 +1,27 @@
+module test.mod
+
+import other.mod.name // inline comment
+import another.mod.name
+
+// single line comment
+
+/*
+ Multiline comment
+*/
+
+def fun() {
+}
+
+def fun2(a: i32, b: MyType): MyOtherType {
+}
+
+struct MyType {
+	val myVar: u32
+	var myOtherThing: MyOtherType
+
+	def muh(a: i32, b: MyType): MyOtherType {
+	}
+	
+	def mah(a: f32, b: Mursk) {
+	}	
+}
