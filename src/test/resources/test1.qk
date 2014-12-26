@@ -25,3 +25,41 @@ struct MyType {
 	def mah(a: f32, b: Mursk) {
 	}	
 }
+
+def f() {
+	val myVar: u32
+	var myVar: MyType
+	
+	if() {
+		val MyVar: u2
+		var MyVar: u4
+	}
+	
+	if() {
+	} else {
+	}
+	
+	if() {
+	} elif() {
+	} elif() {
+	} else {
+	}
+	
+	while() {
+		for() {
+			{
+				if() {
+				}
+				{
+				}
+			}
+		}
+	}
+	
+	for() {
+	}
+}
+
+def expr() {	
+	a = 2
+}

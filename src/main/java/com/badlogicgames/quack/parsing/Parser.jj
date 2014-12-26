@@ -80,7 +80,14 @@ TOKEN: {
 	< DEF: "def" > |
 	< VAL: "val" > |
 	< VAR: "var" > |	
-	< STRUCT: "struct" >
+	< STRUCT: "struct" > |
+	< IF: "if" > |
+	< ELIF: "elif" > |
+	< ELSE: "else" > |
+	< DO: "do" > |
+	< WHILE: "while" > |
+	< FOR: "for" > |
+	< SIZEOF: "sizeof" >
 }
 
 // Inbuild Types
@@ -226,17 +233,7 @@ TOKEN :
 | < XOR: "^" >
 | < REM: "%" >
 | < LSHIFT: "<<" >
-| < PLUSASSIGN: "+=" >
-| < MINUSASSIGN: "-=" >
-| < STARASSIGN: "*=" >
-| < SLASHASSIGN: "/=" >
-| < ANDASSIGN: "&=" >
-| < ORASSIGN: "|=" >
-| < XORASSIGN: "^=" >
-| < REMASSIGN: "%=" >
-| < LSHIFTASSIGN: "<<=" >
-| < RSIGNEDSHIFTASSIGN: ">>=" >
-| < RUNSIGNEDSHIFTASSIGN: ">>>=" >
+| < RSHIFT: ">>" >
 | < ELLIPSIS: "..." >
 }
 
@@ -289,7 +286,7 @@ void FunctionDefinition():
 {}
 {
 	"def" <IDENTIFIER> ArgumentList() [":" Type() ] "{"
-		// Statement()
+		FunctionBody() 
 	"}"
 }
 
@@ -305,6 +302,62 @@ void Argument():
 	<IDENTIFIER> ":" Type()
 }
 
+void FunctionBody():
+{}
+{
+	StatementList()
+}
+
+void StatementList():
+{}
+{
+	(Statement())*
+}
+
+void Statement():
+{}
+{
+	VariableDeclaration() |
+	AssignmentOrExpression() |	
+	Block() |
+	IfBlock() |
+	WhileBlock() |
+	ForBlock()
+}
+
+void VariableDeclaration():
+{}
+{
+	"val" <IDENTIFIER> ":" Type() |
+	"var" <IDENTIFIER> ":" Type()
+}
+
+void Block():
+{}
+{
+	"{" StatementList() "}"
+}
+
+void IfBlock():
+{}
+{
+	"if" "(" ")" Block()
+	("elif" "(" ")" Block())*
+	[ "else" Block() ]
+}
+
+void WhileBlock():
+{}
+{
+	"while" "(" ")" Block()
+}
+
+void ForBlock():
+{}
+{
+	"for" "(" ")" Block()
+}
+
 void Type():
 {}
 {
@@ -313,4 +366,90 @@ void Type():
 	"i8" | "i16" | "i32" | "i64" |
 	"f32" | "f64" |
 	<IDENTIFIER> 
+}
+
+void AssignmentOrExpression():
+{}
+{
+	Expression() [ "=" Expression() ]
+}
+
+void Expression():
+{}
+{	
+	LogicalExpression()
+}
+
+void LogicalExpression():
+{}
+{
+	BitExpression() ( ("||" | "&&") BitExpression() )*
+}
+
+void BitExpression():
+{}
+{
+	EqualityExpression() ( ("&" | "|" | "^") EqualityExpression())* 
+}
+
+void EqualityExpression():
+{}
+{
+	RelationalExpression() (("==" | "!=") RelationalExpression())*
+}
+
+void RelationalExpression():
+{}
+{
+	ShiftExpression() (("<" | ">" | "<=" | ">=") ShiftExpression())*
+}
+
+void ShiftExpression():
+{}
+{
+	AddExpression() (("<<" | ">>") AddExpression())*
+}
+
+void AddExpression():
+{}
+{
+	MultExpression() (("+" | "-") MultExpression())*
+}
+
+void MultExpression():
+{}
+{
+	PostfixExpression() (("*" | "/" | "%") PostfixExpression())*
+}
+
+void PostfixExpression():
+{}
+{
+	PrimaryExpression() (
+		"[" Expression() "]" |
+		"(" [ ArgumentExpressionList() ] ")" |
+		"." <IDENTIFIER> )*
+}
+
+void ArgumentExpressionList():
+{}
+{
+	Expression() ("," Expression())*
+}
+
+void PrimaryExpression():
+{}
+{
+	<IDENTIFIER> |
+	Constant() |
+	"(" Expression() ")"
+}
+
+void Constant():
+{}
+{
+	<INTEGER_LITERAL> |
+	<FLOATING_POINT_LITERAL> |
+	<CHARACTER_LITERAL> |
+	<STRING_LITERAL>
 }
