@@ -61,6 +61,7 @@ public class AstTraversal {
 		// visit any children
 		if(node instanceof AstArgument) {
 			walk(visitor, node, ((AstArgument)node).getType(), excluded);
+			walk(visitor, node, ((AstArgument)node).getDefaultValue(), excluded);
 		} else if(node instanceof AstArgumentExpression) {
 			walk(visitor, node, ((AstArgumentExpression)node).getExpression(), excluded);
 		} else if(node instanceof AstArrayLookup) {		

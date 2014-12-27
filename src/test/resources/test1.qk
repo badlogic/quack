@@ -133,3 +133,7 @@ def testInitializer() {
 	val m: Vals
 	m= Vals(x: 20, y: 42)
 }
+
+def testDefaultParams(x: i32=2, y: i32=cos(20 * 39), z: i32) {
+	testDefaultParams(x: 10)
+}

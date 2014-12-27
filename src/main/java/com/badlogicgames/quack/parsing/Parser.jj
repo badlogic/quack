@@ -394,13 +394,15 @@ AstArgument Argument():
 {
 	Token t;
 	AstType ty;
+	AstExpression e=null;
 }
 {
-	t=<IDENTIFIER> ":" ty=Type()
+	t=<IDENTIFIER> ":" ty=Type() [ "=" e=Expression() ]
 	{
 		AstArgument arg = new AstArgument(t.beginLine, t.beginColumn);
 		arg.setName(t.image);
 		arg.setType(ty);
+		arg.setDefaultValue(e);
 		return arg;
 	}
 }
