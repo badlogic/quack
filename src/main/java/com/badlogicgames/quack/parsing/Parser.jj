@@ -117,19 +117,15 @@ TOKEN: {
 TOKEN : {
   < INTEGER_LITERAL:
         <DECIMAL_LITERAL>
-      | <HEX_LITERAL> 
-      | <OCTAL_LITERAL>
+      | <HEX_LITERAL>       
   >
 |
   < #DECIMAL_LITERAL: ["1"-"9"] (["0"-"9"])* >
 |
   < #HEX_LITERAL: "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+ >
 |
-  < #OCTAL_LITERAL: "0" (["0"-"7"])* >
-|
   < FLOATING_POINT_LITERAL:
-        <DECIMAL_FLOATING_POINT_LITERAL>
-      | <HEXADECIMAL_FLOATING_POINT_LITERAL>
+        <DECIMAL_FLOATING_POINT_LITERAL>      
   >
 |
   < #DECIMAL_FLOATING_POINT_LITERAL:
@@ -140,13 +136,6 @@ TOKEN : {
   >
 |
   < #DECIMAL_EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
-|
-  < #HEXADECIMAL_FLOATING_POINT_LITERAL:
-        "0" ["x", "X"] (["0"-"9","a"-"f","A"-"F"])+ (".")? <HEXADECIMAL_EXPONENT>
-      | "0" ["x", "X"] (["0"-"9","a"-"f","A"-"F"])* "." (["0"-"9","a"-"f","A"-"F"])+ <HEXADECIMAL_EXPONENT>
-  >
-|
-  < #HEXADECIMAL_EXPONENT: ["p","P"] (["+","-"])? (["0"-"9"])+ >
 |
   < CHARACTER_LITERAL:
       "'"
@@ -257,9 +246,11 @@ AstCompilationUnit CompilationUnit():
 }
 {
 	m = ModuleDeclaration()
-	(i=ImportDeclaration() { imports.add(i); })*	
-	(s=StructDefinition() { structs.add(s); } | 
-	 f=FunctionDefinition() { functions.add(f); })* 
+	(i=ImportDeclaration() {imports.add(i);})*	
+	(
+		s=StructDefinition() {structs.add(s);} | 
+	 	f=FunctionDefinition() {functions.add(f);}
+	)* 
 	{
 		AstCompilationUnit cu = new AstCompilationUnit(1, 1); 
 		cu.setModule(m);
@@ -267,19 +258,6 @@ AstCompilationUnit CompilationUnit():
 		cu.getStructs().addAll(structs);
 		cu.getFunctions().addAll(functions);
 		return cu; 
-	}
-}
-
-String ModuleName():
-{	
-	StringBuilder b = new StringBuilder();
-	Token t;	
-}
-{
-	t=<IDENTIFIER> { b.append(t.image); }
-	( "." t=<IDENTIFIER> { b.append("."); b.append(t.image); } )*
-	{
-		return b.toString();
 	}
 }
 
@@ -311,6 +289,21 @@ AstImport ImportDeclaration():
 	}
 }
 
+String ModuleName():
+{	
+	StringBuilder b = new StringBuilder();
+	Token t;	
+}
+{
+	t=<IDENTIFIER> {b.append(t.image);}
+	( 
+		"." t=<IDENTIFIER> {b.append("."); b.append(t.image);} 
+	)*
+	{
+		return b.toString();
+	}
+}
+
 AstStruct StructDefinition():
 {
 	Token b;
@@ -321,7 +314,7 @@ AstStruct StructDefinition():
 	List<AstFunction> functions = new ArrayList<AstFunction>();
 }
 {
-	b = "struct" t = <IDENTIFIER> "{" 
+	b="struct" t=<IDENTIFIER> "{" 
 		(f=FieldDeclaration() {fields.add(f);})*
 		(fu=FunctionDefinition() {functions.add(fu);})*
 	"}"
@@ -428,12 +421,14 @@ AstStatement Statement():
 	AstStatement s;
 }
 {
-	s=VariableDeclaration() |
-	s=AssignmentOrExpression() |	
-	s=Block() |
-	s=IfBlock() |
-	s=WhileBlock() |
-	s=ForBlock()
+	(
+		s=VariableDeclaration() |
+		s=AssignmentOrExpression() |	
+		s=Block() |
+		s=IfBlock() |
+		s=WhileBlock() |
+		s=ForBlock()
+	)
 	{
 		return s;
 	}
@@ -564,35 +559,19 @@ List<AstStatement> ForBottom():
 	}
 }
 
-AstType Type():
-{
-	Token t;
-}
-{
-	t="bool" |
-	t="u8" | t="u16" | t="u32" | t="u64" |
-	t="i8" | t="i16" | t="i32" | t="i64" |
-	t="f32" | t="f64" |
-	t=<IDENTIFIER>
-	{
-		AstType type = new AstType(t.beginLine, t.beginColumn);
-		type.setName(t.image);
-		return type;
-	} 
-}
-
 AstExpression AssignmentOrExpression():
 {
 	AstExpression lhs;
-	AstExpression rhs = null;
+	AstExpression rhs = null;	
 }
 {
 	lhs=Expression() [ "=" rhs=Expression() ]
 	{
 		if(rhs != null) {
-			AstAssign assign = new AstAssign(lhs.getLine(), lhs.getCol());
+			AstBinaryOp assign = new AstBinaryOp(lhs.getLine(), lhs.getCol());
 			assign.setLeftHandSide(lhs);
 			assign.setRightHandSide(rhs);
+			assign.setOperator("=");
 			return assign;
 		} else {
 			return lhs;
@@ -611,88 +590,265 @@ AstExpression Expression():
 	}
 }
 
-void LogicalExpression():
+AstExpression LogicalExpression():
+{	
+	AstExpression last;	
+	Token op;	
+	AstExpression e;
+}
 {
-	AstExpression first;
+	last=BitExpression() ( (op="||" | op="&&") e=BitExpression() 
+		{
+			AstBinaryOp logical = new AstBinaryOp(op.beginLine, op.beginColumn);
+			logical.setLeftHandSide(last);
+			logical.setRightHandSide(e);
+			logical.setOperator(op.image);			
+			last = logical;				
+		}
+	)*
+	{
+		return last;
+	}
+}
+
+AstExpression BitExpression():
+{	
+	AstExpression last;	
 	Token op;
 	AstExpression e;
 }
 {
-	first=BitExpression() ( (op="||" | op="&&") e=BitExpression() )*
+	last=EqualityExpression() ( (op="&" | op="|" | op="^") e=EqualityExpression()
+			{
+			AstBinaryOp logical = new AstBinaryOp(op.beginLine, op.beginColumn);
+			logical.setLeftHandSide(last);
+			logical.setRightHandSide(e);
+			logical.setOperator(op.image);			
+			last = logical;				
+		}
+	)*
+	{
+		return last;
+	}
 }
 
-void BitExpression():
-{}
+AstExpression EqualityExpression():
 {
-	EqualityExpression() ( ("&" | "|" | "^") EqualityExpression())* 
+	AstExpression last;	
+	Token op;
+	AstExpression e;
+}
+{
+	last=RelationalExpression() ((op="==" | op="!=") e=RelationalExpression()
+		{
+			AstBinaryOp logical = new AstBinaryOp(op.beginLine, op.beginColumn);
+			logical.setLeftHandSide(last);
+			logical.setRightHandSide(e);
+			logical.setOperator(op.image);			
+			last = logical;				
+		}
+	)*
+	{
+		return last;
+	}
 }
 
-void EqualityExpression():
-{}
+AstExpression RelationalExpression():
 {
-	RelationalExpression() (("==" | "!=") RelationalExpression())*
+	AstExpression last;	
+	Token op;
+	AstExpression e;
+}
+{
+	last=ShiftExpression() ((op="<" | op=">" | op="<=" | op=">=") e=ShiftExpression()
+	{
+			AstBinaryOp logical = new AstBinaryOp(op.beginLine, op.beginColumn);
+			logical.setLeftHandSide(last);
+			logical.setRightHandSide(e);
+			logical.setOperator(op.image);			
+			last = logical;				
+		}
+	)*
+	{
+		return last;
+	}
 }
 
-void RelationalExpression():
-{}
+AstExpression ShiftExpression():
 {
-	ShiftExpression() (("<" | ">" | "<=" | ">=") ShiftExpression())*
+	AstExpression last;	
+	Token op;
+	AstExpression e;
+}
+{
+	last=AddExpression() ((op="<<" | op=">>") e=AddExpression()
+	{
+			AstBinaryOp logical = new AstBinaryOp(op.beginLine, op.beginColumn);
+			logical.setLeftHandSide(last);
+			logical.setRightHandSide(e);
+			logical.setOperator(op.image);			
+			last = logical;				
+		}
+	)*
+	{
+		return last;
+	}
 }
 
-void ShiftExpression():
-{}
+AstExpression AddExpression():
 {
-	AddExpression() (("<<" | ">>") AddExpression())*
+	AstExpression last;	
+	Token op;
+	AstExpression e;
+}
+{
+	last=MultExpression() ((op="+" | op="-") e=MultExpression()
+	{
+			AstBinaryOp logical = new AstBinaryOp(op.beginLine, op.beginColumn);
+			logical.setLeftHandSide(last);
+			logical.setRightHandSide(e);
+			logical.setOperator(op.image);			
+			last = logical;				
+		}
+	)*
+	{
+		return last;
+	}
 }
 
-void AddExpression():
-{}
+AstExpression MultExpression():
 {
-	MultExpression() (("+" | "-") MultExpression())*
+	AstExpression last;	
+	Token op;
+	AstExpression e;
+}
+{
+	last=UnaryExpression() ((op="*" | op="/" | op="%") e=UnaryExpression()
+	{
+			AstBinaryOp logical = new AstBinaryOp(op.beginLine, op.beginColumn);
+			logical.setLeftHandSide(last);
+			logical.setRightHandSide(e);
+			logical.setOperator(op.image);			
+			last = logical;				
+		}
+	)*
+	{
+		return last;
+	}
 }
 
-void MultExpression():
-{}
+AstExpression UnaryExpression():
 {
-	UnaryExpression() (("*" | "/" | "%") UnaryExpression())*
+	Token op;
+	AstExpression e;
+}
+{
+	(
+		e=PostfixExpression() |
+		(op="!" | op="+" | op="-") e=UnaryExpression() 
+		{
+			AstUnaryOp unary = new AstUnaryOp(op.beginLine, op.beginColumn);
+			unary.setExpression(e);
+			unary.setOperator(op.image);
+			e = unary;
+		} |
+		op="typeof" "(" e=UnaryExpression() ")"
+		{
+			AstUnaryOp unary = new AstUnaryOp(op.beginLine, op.beginColumn);
+			unary.setExpression(e);
+			unary.setOperator(op.image);
+			e = unary;
+		}
+	)
+	{
+		return e;
+	}
 }
 
-void UnaryExpression():
-{}
+AstExpression PostfixExpression():
 {
-	PostfixExpression() |
-	("!" | "+" | "-") UnaryExpression() |
-	"typeof" "(" UnaryExpression() ")"
+	AstExpression e;
+	AstExpression index;
+	List<AstExpression> args;
 }
-
-void PostfixExpression():
-{}
 {
-	PrimaryExpression() (
-		"[" Expression() "]" |
-		"(" [ ArgumentExpressionList() ] ")" |
+	e=PrimaryExpression() (
+		"[" index=Expression() "]" |
+		"(" [ args=ArgumentExpressionList() ] ")" |
 		"." <IDENTIFIER> )*
+	{
+		return null;
+	}
 }
 
-void ArgumentExpressionList():
-{}
+List<AstExpression> ArgumentExpressionList():
 {
-	Expression() ("," Expression())*
+	List<AstExpression> args = new ArrayList<AstExpression>();
+	AstExpression e;
+}
+{
+	e=Expression() {args.add(e);}
+	("," e=Expression() {args.add(e);})*
+	{
+		return args;
+	}
 }
 
-void PrimaryExpression():
-{}
+AstExpression PrimaryExpression():
 {
-	<IDENTIFIER> |
-	Constant() |
-	"(" Expression() ")"
+	Token t=null;
+	AstExpression e=null;
+}
+{
+	(
+		t=<IDENTIFIER> |
+		e=Constant() |
+		"(" e=Expression() ")"
+	)
+	{
+		if(t!=null) {
+			return null;
+		} else {
+			return e;
+		}
+	}
 }
 
-void Constant():
-{}
+AstLiteral Constant():
 {
-	<INTEGER_LITERAL> |
-	<FLOATING_POINT_LITERAL> |
-	<CHARACTER_LITERAL> |
-	<STRING_LITERAL>
+	Token t;
+	AstLiteral.LiteralType type = null;
+}
+{
+	(
+		t=<INTEGER_LITERAL> {type=AstLiteral.LiteralType.Integer;} |
+		t=<FLOATING_POINT_LITERAL> {type=AstLiteral.LiteralType.Float;} |
+		t=<CHARACTER_LITERAL> {type=AstLiteral.LiteralType.Character;} |
+		t=<STRING_LITERAL> {type=AstLiteral.LiteralType.String;}
+	)
+	{
+		AstLiteral lit = new AstLiteral(t.beginLine, t.beginColumn);
+		lit.setValue(t.image);
+		lit.setLiteralType(type);
+		return lit;
+	}
+}
+
+AstType Type():
+{
+	Token t;
+}
+{
+	(
+		t="bool" |
+		t="u8" | t="u16" | t="u32" | t="u64" |
+		t="i8" | t="i16" | t="i32" | t="i64" |
+		t="f32" | t="f64" |
+		t=<IDENTIFIER>
+	)
+	{
+		AstType type = new AstType(t.beginLine, t.beginColumn);
+		type.setName(t.image);
+		return type;
+	} 
 }

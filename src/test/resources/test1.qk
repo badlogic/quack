@@ -10,6 +10,7 @@ import another.mod.name
 */
 
 def fun() {
+
 }
 
 def fun2(a: i32, b: MyType): MyOtherType {
@@ -29,24 +30,23 @@ struct MyType {
 def f() {
 	val myVar: u32
 	var myVar: MyType
-	
-	if() {
+	if(myVar) {
 		val MyVar: u2
 		var MyVar: u4
 	}
 	
-	if() {
+	if(myVar) {
 	} else {
 	}
 	
-	if() {
-	} elif() {
-	} elif() {
+	if(1) {
+	} elif(2) {
+	} elif(1) {
 	} else {
 	}
 	
-	while() {
-		for() {
+	while(2) {
+		for(val i: i32; i < 0; i=i+1) {
 			{
 				if() {
 				}
