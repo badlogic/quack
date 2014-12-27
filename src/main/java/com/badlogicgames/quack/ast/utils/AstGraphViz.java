@@ -13,6 +13,7 @@ import com.badlogicgames.quack.ast.AstArrayLookup;
 import com.badlogicgames.quack.ast.AstBinaryOp;
 import com.badlogicgames.quack.ast.AstBlock;
 import com.badlogicgames.quack.ast.AstCall;
+import com.badlogicgames.quack.ast.AstCast;
 import com.badlogicgames.quack.ast.AstCompilationUnit;
 import com.badlogicgames.quack.ast.AstElif;
 import com.badlogicgames.quack.ast.AstExpression;
@@ -81,6 +82,8 @@ public class AstGraphViz {
 			return "Block";
 		} else if(node instanceof AstCall) {
 			return "Call";
+		} else if(node instanceof AstCast) {
+			return "Cast";
 		} else if(node instanceof AstCompilationUnit) {
 			return "Compilation Unit";
 		} else if(node instanceof AstElif) {

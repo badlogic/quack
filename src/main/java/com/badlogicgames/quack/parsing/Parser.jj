@@ -95,7 +95,8 @@ TOKEN: {
 	< FOR: "for" > |
 	< RETURN: "return" > |
 	< SIZEOF: "sizeof" > |
-	< TYPEOF: "typeof">
+	< TYPEOF: "typeof"> |
+	< CAST: "cast">
 }
 
 // Inbuild Types
@@ -113,7 +114,9 @@ TOKEN: {
 	< I64: "i64" > |
 	
 	< F32: "f32" > |
-	< F64: "f64" >
+	< F64: "f64" > |
+	< ANY: "any" > |
+	< ANYREF: "anyref" >
 }
 
 // Literals
@@ -763,6 +766,7 @@ AstExpression UnaryExpression():
 {
 	Token op;
 	AstExpression e=null;
+	AstType ty;
 }
 {
 	(
@@ -780,7 +784,14 @@ AstExpression UnaryExpression():
 			typeof.setExpression(e);
 			typeof.setOperator(op.image);
 			e = typeof;
-		}		
+		} |
+		op="cast" "<" ty=Type() ">" "(" e=Expression() ")"
+		{
+			AstCast cast = new AstCast(op.beginLine, op.beginColumn);
+			cast.setType(ty);
+			cast.setExpression(e);
+			e=cast;
+		} 
 	)
 	{
 		return e;
@@ -895,6 +906,7 @@ AstType Type():
 		t="u8" | t="u16" | t="u32" | t="u64" |
 		t="i8" | t="i16" | t="i32" | t="i64" |
 		t="f32" | t="f64" |
+		t="any" | t="anyref" |
 		t=<IDENTIFIER>
 	)
 	{

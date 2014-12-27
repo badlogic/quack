@@ -8,6 +8,7 @@ import com.badlogicgames.quack.ast.AstArrayLookup;
 import com.badlogicgames.quack.ast.AstBinaryOp;
 import com.badlogicgames.quack.ast.AstBlock;
 import com.badlogicgames.quack.ast.AstCall;
+import com.badlogicgames.quack.ast.AstCast;
 import com.badlogicgames.quack.ast.AstCompilationUnit;
 import com.badlogicgames.quack.ast.AstElif;
 import com.badlogicgames.quack.ast.AstExpression;
@@ -74,7 +75,10 @@ public class AstTraversal {
 			for(AstExpression expr: ((AstCall)node).getArguments()) {
 				walk(visitor, node, expr, excluded);
 			}
-		} else if(node instanceof AstCompilationUnit) {
+		} else if(node instanceof AstCast) {
+			walk(visitor, node, ((AstCast)node).getType(), excluded);
+			walk(visitor, node, ((AstCast)node).getExpression(), excluded);
+		}else if(node instanceof AstCompilationUnit) {
 			walk(visitor, node, ((AstCompilationUnit)node).getModule(), excluded);
 			for(AstImport imp: ((AstCompilationUnit)node).getImports()) {
 				walk(visitor, node, imp, excluded);
