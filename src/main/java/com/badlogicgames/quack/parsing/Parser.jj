@@ -344,16 +344,18 @@ AstVariableDeclaration FieldDeclaration():
 	Token s=null;
 	Token b;
 	Token t;
-	AstType ty;
+	AstType ty=null;
+	AstExpression e=null;
 }
 {
-	[s="static"] (b="val"|b="var") t=<IDENTIFIER> ( (":" ty=Type()) | 
+	[s="static"] (b="val"|b="var") t=<IDENTIFIER> [":" ty=Type()] [ "=" e=Expression()]
 	{
 		AstVariableDeclaration field = new AstVariableDeclaration(b.beginLine, b.beginColumn);
 		field.setStatic(s!=null);
 		field.setQualifier(b.image.equals("val")?AstVariableDeclaration.Qualifier.Val:AstVariableDeclaration.Qualifier.Var);
 		field.setName(t.image);
 		field.setType(ty);
+		field.setInitializer(e);
 		return field;
 	}
 }

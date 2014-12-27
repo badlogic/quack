@@ -162,3 +162,9 @@ def array() {
 	a = ArrayI32(10)	
 	a[10] = a[2] * 10 + 3
 }
+
+def init() {
+	val a = 2
+	val a: i32 = 3
+	var b = Vals(x: 2, y: 3)
+}

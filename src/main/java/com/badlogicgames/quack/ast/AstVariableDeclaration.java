@@ -11,6 +11,7 @@ public class AstVariableDeclaration extends AstStatement {
 	private Qualifier qualifier;
 	private String name;
 	private AstType type;
+	private AstExpression initializer;
 
 	public AstVariableDeclaration (int line, int col) {
 		super(line, col);
@@ -46,5 +47,13 @@ public class AstVariableDeclaration extends AstStatement {
 
 	public void setType (AstType type) {
 		this.type = type;
+	}
+
+	public AstExpression getInitializer () {
+		return initializer;
+	}
+
+	public void setInitializer (AstExpression initializer) {
+		this.initializer = initializer;
 	}
 }
