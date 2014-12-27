@@ -415,17 +415,19 @@ AstFunction FunctionDefinition():
 {
 	Token b;
 	Token t;	
+	List<String> g=null;
 	List<AstArgument> args;
 	AstType rt = null;	
 	List<AstStatement> body;
 }
 {
-	b="def" (t=<IDENTIFIER>|t=ArrayOp()) args=ArgumentList() [":" rt=Type() ] "{"
+	b="def" (t=<IDENTIFIER>|t=ArrayOp()) [g=GenericParameters()] args=ArgumentList() [":" rt=Type() ] "{"
 		body=FunctionBody() 
 	"}"
 	{
 		AstFunction func = new AstFunction(b.beginLine, b.beginColumn);
 		func.setName(t.image);
+		if(g!=null) func.getGenericTypes().addAll(g);
 		func.getArguments().addAll(args);
 		func.setReturnType(rt);
 		func.getBody().addAll(body);

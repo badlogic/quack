@@ -6,6 +6,7 @@ import java.util.List;
 
 public class AstFunction extends AstNode {
 	private String name;
+	private final List<String> genericTypes = new ArrayList<>();
 	private AstType returnType;
 	private final List<AstArgument> arguments = new ArrayList<>();
 	private final List<AstStatement> body = new ArrayList<>();
@@ -20,6 +21,10 @@ public class AstFunction extends AstNode {
 
 	public void setName (String name) {
 		this.name = name;
+	}
+	
+	public List<String> getGenericTypes () {
+		return genericTypes;
 	}
 
 	public AstType getReturnType () {
