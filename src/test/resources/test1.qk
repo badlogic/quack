@@ -9,8 +9,12 @@ import another.mod.name
  Multiline comment
 */
 
-def fun() {
-
+def fib(n: i32) {
+	if (n < 2) {
+		return n
+	} else {
+		return fib(n-1)+fib(n-2)
+	}
 }
 
 def fun2(a: i32, b: MyType): MyOtherType {

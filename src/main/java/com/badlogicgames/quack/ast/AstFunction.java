@@ -7,7 +7,7 @@ import java.util.List;
 public class AstFunction extends AstNode {
 	private String name;
 	private AstType returnType;
-	private final List<AstNode> arguments = new ArrayList<>();
+	private final List<AstArgument> arguments = new ArrayList<>();
 	private final List<AstStatement> body = new ArrayList<>();
 
 	public AstFunction (int line, int col) {
@@ -30,7 +30,7 @@ public class AstFunction extends AstNode {
 		this.returnType = returnType;
 	}
 
-	public List<AstNode> getArguments () {
+	public List<AstArgument> getArguments () {
 		return arguments;
 	}
 

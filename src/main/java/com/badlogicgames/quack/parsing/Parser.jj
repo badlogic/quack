@@ -33,6 +33,7 @@
 
 options {
 	LOOKAHEAD = 2;	
+	FORCE_LA_CHECK = true;
 	STATIC = false;
 	UNICODE_INPUT = true;
 	JDK_VERSION = "1.5";
@@ -91,6 +92,7 @@ TOKEN: {
 	< DO: "do" > |
 	< WHILE: "while" > |
 	< FOR: "for" > |
+	< RETURN: "return" > |
 	< SIZEOF: "sizeof" > |
 	< TYPEOF: "typeof">
 }
@@ -742,7 +744,7 @@ AstExpression MultExpression():
 AstExpression UnaryExpression():
 {
 	Token op;
-	AstExpression e;
+	AstExpression e=null;
 }
 {
 	(
@@ -760,6 +762,14 @@ AstExpression UnaryExpression():
 			unary.setExpression(e);
 			unary.setOperator(op.image);
 			e = unary;
+		} |
+		op="return" [ e=UnaryExpression() ]
+		{
+			AstReturn ret = new AstReturn(op.beginLine, op.beginColumn);
+			if(e != null) {
+				ret.setValue(e);
+			}
+			e = ret;
 		}
 	)
 	{
@@ -779,8 +789,8 @@ AstExpression PostfixExpression():
 	(
 		{index=null; args=null; t=null;}
 		(
-			t="[" index=Expression() "]" |
-			t="(" [ args=ArgumentExpressionList() ] ")" |
+			//t="[" index=Expression() "]" |
+			t="[" [ args=ArgumentExpressionList() ] "]" |
 			"." t=<IDENTIFIER>
 		)
 		{
