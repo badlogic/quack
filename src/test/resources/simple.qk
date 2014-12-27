@@ -1,5 +1,10 @@
 module simple
 
-def test() {
-	return fib(a+1) + fib(a+b)
+def fib(n: i32) {
+	if (n < 2) {
+		return n
+	} else {
+		n = n
+		return fib(n-1)+fib(n-2)
+	}
 }

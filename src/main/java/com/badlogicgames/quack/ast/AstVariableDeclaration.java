@@ -7,12 +7,21 @@ public class AstVariableDeclaration extends AstStatement {
 		Var
 	}
 	
+	private boolean isStatic;
 	private Qualifier qualifier;
 	private String name;
 	private AstType type;
 
 	public AstVariableDeclaration (int line, int col) {
 		super(line, col);
+	}		
+
+	public boolean isStatic () {
+		return isStatic;
+	}
+
+	public void setStatic (boolean isStatic) {
+		this.isStatic = isStatic;
 	}
 
 	public Qualifier getQualifier () {

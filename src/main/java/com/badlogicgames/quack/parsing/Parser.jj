@@ -83,6 +83,7 @@ TOKEN: {
 	< IMPORT: "import" > |
 	< MODULE: "module" > |
 	< DEF: "def" > |
+	< STATIC: "static" > |
 	< VAL: "val" > |
 	< VAR: "var" > |	
 	< STRUCT: "struct" > |
@@ -333,14 +334,16 @@ AstStruct StructDefinition():
 
 AstVariableDeclaration FieldDeclaration():
 {	
+	Token s=null;
 	Token b;
 	Token t;
 	AstType ty;
 }
 {
-	(b="val"|b="var") t=<IDENTIFIER> ":" ty=Type()	
+	[s="static"] (b="val"|b="var") t=<IDENTIFIER> ":" ty=Type()	
 	{
 		AstVariableDeclaration field = new AstVariableDeclaration(b.beginLine, b.beginColumn);
+		field.setStatic(s!=null);
 		field.setQualifier(b.image.equals("val")?AstVariableDeclaration.Qualifier.Val:AstVariableDeclaration.Qualifier.Var);
 		field.setName(t.image);
 		field.setType(ty);

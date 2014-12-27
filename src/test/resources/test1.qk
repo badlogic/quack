@@ -1,15 +1,41 @@
-module test.mod
-
-import other.mod.name // inline comment
-import another.mod.name
-
 // single line comment
 
 /*
  Multiline comment
 */
+module test.mod
 
-def fib(n: i32) {
+import other.mod.name // inline comment
+import another.mod.name /** inline multiline
+*/
+
+def fun() {
+}
+
+def fun(a: i32, b: i32, c: i32) {
+}
+
+def fun(a: i32, b: i32, c: i32): i32 {
+}
+
+struct Empty {
+}
+
+struct Vals {
+	val a: i32
+	var b: i32
+	static var c: i32
+}
+
+struct Vals {
+	def Vals(a: i32, i:a) {
+	}
+	
+	def vals(): i32 {
+	}
+}
+
+def fib(n: i32): i32 {
 	if (n < 2) {
 		return n
 	} else {
@@ -17,54 +43,66 @@ def fib(n: i32) {
 	}
 }
 
-def fun2(a: i32, b: MyType): MyOtherType {
-}
-
-struct MyType {
-	val myVar: u32
-	var myOtherThing: MyOtherType
-
-	def muh(a: i32, b: MyType): MyOtherType {
+def test() {
+	if(1) {
 	}
 	
-	def mah(a: f32, b: Mursk) {
-	}	
-}
-
-def f() {
-	val myVar: u32
-	var myVar: MyType
-	if(myVar) {
-		val MyVar: u2
-		var MyVar: u4
-	}
-	
-	if(myVar) {
+	if(2) {
 	} else {
 	}
 	
-	if(false) {
-	} elif(2) {
-	} elif(1) {
+	if(3) {
+	} elif(19) {
+	} elif(20) {
+	}
+	
+	if(4) {
+	} elif(5) {
+	} elif(6) {
 	} else {
 	}
 	
-	while(2) {
-		for(val i: i32; i < 0; i=i+1) {
-			{
-				if(true) {
-				}
-				{
-				}
+	if(7) {
+		if(8) {
+			if(9) {
 			}
+		} elif(10) {
+		} else {
 		}
-	}
-	
-	for(val i: i32, val j: i32; i < 10 + 23; i=i+1, v()) {
+	} else {
 	}
 }
 
-def expr() {	
-	b.c.a[0] = -(2)
-	c = fun(a, b, c, q(d | f))
+def test() {
+	while(0) {
+	}
+}
+
+def test() {
+	for(val i: i32, val j: i32; i < 0; i=i+1, j=j+1) {
+	}
+}
+
+def test() {
+	return
+}
+
+def test(): i32 {
+	return 0
+}
+
+def test() {
+	val i: i32
+	var j: MyType
+	
+	i = 0
+	j = 10
+	
+	a + -b * 2 / 2 % 2 - 10 << 2 + 2 >> 1
+	
+	a && b || !c
+	
+	test(a, b, c)
+	
+	a.b.c[10](a, b, c).field = 10
 }

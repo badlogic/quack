@@ -88,7 +88,7 @@ public class AstGraphViz {
 		} else if(node instanceof AstFor) {
 			return "For";
 		} else if(node instanceof AstFunction) {
-			return "def " + ((AstFunction)node).getName();
+			return "Def " + ((AstFunction)node).getName();
 		} else if(node instanceof AstGetElement) {
 			return "Get Element";
 		} else if(node instanceof AstIf) {
@@ -104,13 +104,13 @@ public class AstGraphViz {
 		} else if(node instanceof AstReturn) {
 			return "Return";
 		} else if(node instanceof AstStruct) {
-			return "struct" + ((AstStruct)node).getName();
+			return "Struct " + ((AstStruct)node).getName();
 		} else if(node instanceof AstType) {
 			return "type: " + ((AstType)node).getName();
 		} else if(node instanceof AstUnaryOp) {
 			return ((AstUnaryOp)node).getOperator().name();
 		} else if(node instanceof AstVariableDeclaration) {
-			return ((AstVariableDeclaration)node).getQualifier().name() + " " + ((AstVariableDeclaration)node).getName();
+			return (((AstVariableDeclaration)node).isStatic()?"Static ":"") + ((AstVariableDeclaration)node).getQualifier().name() + " " + ((AstVariableDeclaration)node).getName();
 		} else if(node instanceof AstWhile) {
 			return "While";
 		} else {
