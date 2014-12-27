@@ -5,7 +5,8 @@ public class AstUnaryOp extends AstExpression {
 		Not,
 		Plus,
 		Minus,
-		TypeOf;
+		TypeOf,
+		SizeOf;
 		
 		public static Operator fromString(String op) {
 			switch(op) {
@@ -13,6 +14,7 @@ public class AstUnaryOp extends AstExpression {
 			case "+": return Plus;
 			case "-": return Minus;
 			case "typeof": return TypeOf;
+			case "sizeof": return SizeOf;
 			default:
 				throw new RuntimeException("Unknown operator: '" + op + "'");
 			}
@@ -21,6 +23,7 @@ public class AstUnaryOp extends AstExpression {
 	
 	private Operator operator;
 	private AstExpression expression;
+	private AstType type;
 	
 	public AstUnaryOp (int line, int col) {
 		super(line, col);		
@@ -45,4 +48,12 @@ public class AstUnaryOp extends AstExpression {
 	public void setExpression (AstExpression expression) {
 		this.expression = expression;
 	}
+
+	public AstType getType () {
+		return type;
+	}
+
+	public void setType (AstType type) {
+		this.type = type;
+	}	
 }

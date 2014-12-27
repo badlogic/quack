@@ -136,4 +136,29 @@ def testInitializer() {
 
 def testDefaultParams(x: i32=2, y: i32=cos(20 * 39), z: i32) {
 	testDefaultParams(x: 10)
+	alloc(len * typeof(i32))
+}
+
+struct ArrayI32 {
+	val len: i32
+	val ptr: i64 
+
+	def ArrayI32(len: i32): ArrayI32 {
+		self.ptr = alloc(len * sizeof(i32))
+		self.len = len
+		return self
+	}
+	def []get (index: i32): i32 {
+		return memget32(ptr + index << 2)		
+	}
+	
+	def []set (index: i32, value: i32): i32 {
+		memset32(ptr + index << 2, value)
+	}
+}
+
+def array() {
+	val a: ArrayI32	
+	a = ArrayI32(10)	
+	a[10] = a[2] * 10 + 3
 }

@@ -96,7 +96,9 @@ TOKEN: {
 	< RETURN: "return" > |
 	< SIZEOF: "sizeof" > |
 	< TYPEOF: "typeof"> |
-	< CAST: "cast">
+	< CAST: "cast"> |
+	< ARRAY_GET: "[]get" > |
+	< ARRAY_SET: "[]set" >
 }
 
 // Inbuild Types
@@ -345,7 +347,7 @@ AstVariableDeclaration FieldDeclaration():
 	AstType ty;
 }
 {
-	[s="static"] (b="val"|b="var") t=<IDENTIFIER> ":" ty=Type()	
+	[s="static"] (b="val"|b="var") t=<IDENTIFIER> ( (":" ty=Type()) | 
 	{
 		AstVariableDeclaration field = new AstVariableDeclaration(b.beginLine, b.beginColumn);
 		field.setStatic(s!=null);
@@ -365,7 +367,7 @@ AstFunction FunctionDefinition():
 	List<AstStatement> body;
 }
 {
-	b="def" t=<IDENTIFIER> args=ArgumentList() [":" rt=Type() ] "{"
+	b="def" (t=<IDENTIFIER>|t=ArrayOp()) args=ArgumentList() [":" rt=Type() ] "{"
 		body=FunctionBody() 
 	"}"
 	{
@@ -375,6 +377,17 @@ AstFunction FunctionDefinition():
 		func.setReturnType(rt);
 		func.getBody().addAll(body);
 		return func;
+	}
+}
+
+Token ArrayOp():
+{
+	Token t;
+}
+{
+	(t=<ARRAY_GET> | t=<ARRAY_SET>)
+	{
+		return t;
 	}
 }
 
@@ -580,7 +593,7 @@ AstReturn Return():
 	AstExpression e=null;
 }
 {
-	t="return" [e=Expression()]
+	t="return" [ e=Expression() ]
 	{
 		AstReturn ret = new AstReturn(t.beginLine, t.beginColumn);
 		ret.setValue(e);
@@ -770,7 +783,7 @@ AstExpression UnaryExpression():
 {
 	Token op;
 	AstExpression e=null;
-	AstType ty;
+	AstType ty=null;
 }
 {
 	(
@@ -782,12 +795,21 @@ AstExpression UnaryExpression():
 			unary.setOperator(op.image);
 			e = unary;
 		} |
-		op="typeof" "(" e=UnaryExpression() ")"
+		op="typeof" "(" (e=Expression() | ty=BuildInType())")"
 		{
 			AstUnaryOp typeof = new AstUnaryOp(op.beginLine, op.beginColumn);
 			typeof.setExpression(e);
+			typeof.setType(ty);
 			typeof.setOperator(op.image);
 			e = typeof;
+		} |
+		op="sizeof" "(" (e=Expression() | ty=BuildInType()) ")"
+		{
+			AstUnaryOp sizeof = new AstUnaryOp(op.beginLine, op.beginColumn);					
+			sizeof.setExpression(e);
+			sizeof.setType(ty);
+			sizeof.setOperator(op.image);
+			e=sizeof;
 		} |
 		op="cast" "<" ty=Type() ">" "(" e=Expression() ")"
 		{
@@ -921,7 +943,7 @@ AstLiteral Constant():
 	}
 }
 
-AstType Type():
+AstType BuildInType():
 {
 	Token t;
 }
@@ -931,12 +953,32 @@ AstType Type():
 		t="u8" | t="u16" | t="u32" | t="u64" |
 		t="i8" | t="i16" | t="i32" | t="i64" |
 		t="f32" | t="f64" |
-		t="any" | t="anyref" |
-		t=<IDENTIFIER>
+		t="any" | t="anyref"
 	)
 	{
 		AstType type = new AstType(t.beginLine, t.beginColumn);
 		type.setName(t.image);
 		return type;
+	}
+}
+
+AstType Type():
+{
+	AstType t=null;
+	Token to=null;
+}
+{
+	(
+		t=BuildInType() |
+		to=<IDENTIFIER>
+	)
+	{
+		if(t != null) {
+			return t;
+		} else {
+			AstType type = new AstType(to.beginLine, to.beginColumn);
+			type.setName(to.image);
+			return type;
+		}
 	} 
 }
