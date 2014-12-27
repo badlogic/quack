@@ -39,7 +39,7 @@ def f() {
 	} else {
 	}
 	
-	if(1) {
+	if(false) {
 	} elif(2) {
 	} elif(1) {
 	} else {
@@ -48,7 +48,7 @@ def f() {
 	while(2) {
 		for(val i: i32; i < 0; i=i+1) {
 			{
-				if() {
+				if(true) {
 				}
 				{
 				}
@@ -56,7 +56,7 @@ def f() {
 		}
 	}
 	
-	for() {
+	for(val i: i32, val j: i32; i < 10 + 23; i=i+1, v()) {
 	}
 }
 

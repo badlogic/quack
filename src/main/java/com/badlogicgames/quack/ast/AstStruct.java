@@ -6,7 +6,7 @@ import java.util.List;
 
 public class AstStruct extends AstNode {
 	private String name;
-	private final List<AstVariable> fields = new ArrayList<>();
+	private final List<AstVariableDeclaration> fields = new ArrayList<>();
 	private final List<AstFunction> functions = new ArrayList<>();
 
 	public AstStruct (int line, int col) {
@@ -21,7 +21,7 @@ public class AstStruct extends AstNode {
 		this.name = name;
 	}
 
-	public List<AstVariable> getFields () {
+	public List<AstVariableDeclaration> getFields () {
 		return fields;
 	}
 

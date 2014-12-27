@@ -1,7 +1,7 @@
 
 package com.badlogicgames.quack.ast;
 
-public class AstVariable extends AstStatement {
+public class AstVariableDeclaration extends AstStatement {
 	public static enum Qualifier {
 		Val,
 		Var
@@ -11,7 +11,7 @@ public class AstVariable extends AstStatement {
 	private String name;
 	private AstType type;
 
-	public AstVariable (int line, int col) {
+	public AstVariableDeclaration (int line, int col) {
 		super(line, col);
 	}
 

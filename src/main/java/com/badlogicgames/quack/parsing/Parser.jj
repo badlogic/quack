@@ -115,6 +115,8 @@ TOKEN: {
 
 // Literals
 TOKEN : {
+  < BOOLEAN_LITERAL: "true" | "false" >
+|
   < INTEGER_LITERAL:
         <DECIMAL_LITERAL>
       | <HEX_LITERAL>       
@@ -308,8 +310,8 @@ AstStruct StructDefinition():
 {
 	Token b;
 	Token t;
-	AstVariable f;
-	List<AstVariable> fields = new ArrayList<AstVariable>();
+	AstVariableDeclaration f;
+	List<AstVariableDeclaration> fields = new ArrayList<AstVariableDeclaration>();
 	AstFunction fu;
 	List<AstFunction> functions = new ArrayList<AstFunction>();
 }
@@ -327,7 +329,7 @@ AstStruct StructDefinition():
 	}	
 }
 
-AstVariable FieldDeclaration():
+AstVariableDeclaration FieldDeclaration():
 {	
 	Token b;
 	Token t;
@@ -336,8 +338,8 @@ AstVariable FieldDeclaration():
 {
 	(b="val"|b="var") t=<IDENTIFIER> ":" ty=Type()	
 	{
-		AstVariable field = new AstVariable(b.beginLine, b.beginColumn);
-		field.setQualifier(b.image.equals("val")?AstVariable.Qualifier.Val:AstVariable.Qualifier.Var);
+		AstVariableDeclaration field = new AstVariableDeclaration(b.beginLine, b.beginColumn);
+		field.setQualifier(b.image.equals("val")?AstVariableDeclaration.Qualifier.Val:AstVariableDeclaration.Qualifier.Var);
 		field.setName(t.image);
 		field.setType(ty);
 		return field;
@@ -434,9 +436,9 @@ AstStatement Statement():
 	}
 }
 
-AstVariable VariableDeclaration():
+AstVariableDeclaration VariableDeclaration():
 {
-	AstVariable v;
+	AstVariableDeclaration v;
 }
 {
 	v=FieldDeclaration()
@@ -518,7 +520,7 @@ AstWhile WhileBlock():
 AstFor ForBlock():
 {
 	Token t;
-	List<AstVariable> i;
+	List<AstVariableDeclaration> i;
 	AstExpression e;
 	List<AstStatement> b;
 	AstBlock block;
@@ -535,10 +537,10 @@ AstFor ForBlock():
 	}
 }
 
-List<AstVariable> ForInitializer():
+List<AstVariableDeclaration> ForInitializer():
 {
-	AstVariable var;
-	List<AstVariable> vars = new ArrayList<AstVariable>();
+	AstVariableDeclaration var;
+	List<AstVariableDeclaration> vars = new ArrayList<AstVariableDeclaration>();
 }
 {
 	[var=VariableDeclaration() {vars.add(var);} ("," var=VariableDeclaration() {vars.add(var);})*]
@@ -770,14 +772,40 @@ AstExpression PostfixExpression():
 	AstExpression e;
 	AstExpression index;
 	List<AstExpression> args;
+	Token t;
 }
 {
-	e=PrimaryExpression() (
-		"[" index=Expression() "]" |
-		"(" [ args=ArgumentExpressionList() ] ")" |
-		"." <IDENTIFIER> )*
-	{
-		return null;
+	e=PrimaryExpression() 
+	(
+		{index=null; args=null; t=null;}
+		(
+			t="[" index=Expression() "]" |
+			t="(" [ args=ArgumentExpressionList() ] ")" |
+			"." t=<IDENTIFIER>
+		)
+		{
+			if(index != null) {
+				AstArrayLookup lookup = new AstArrayLookup(t.beginLine, t.beginColumn);
+				lookup.setArray(e);
+				lookup.setIndex(index);
+				e = lookup;
+			} else if(args != null) {
+				AstCall call = new AstCall(t.beginLine, t.beginColumn);
+				call.setTarget(e);
+				call.getArguments().addAll(args);
+				e = call;
+			} else {
+				AstReference ref = new AstReference(t.beginLine, t.beginColumn);
+				ref.setName(t.image);
+				AstGetElement element = new AstGetElement(t.beginLine, t.beginColumn);
+				element.setTarget(e);
+				element.setElement(ref);
+				e = element;
+			}
+		}
+	)*
+	{		
+		return e;
 	}
 }
 
@@ -807,7 +835,9 @@ AstExpression PrimaryExpression():
 	)
 	{
 		if(t!=null) {
-			return null;
+			AstReference ref = new AstReference(t.beginLine, t.beginColumn);
+			ref.setName(t.image);
+			return ref;
 		} else {
 			return e;
 		}
@@ -821,6 +851,7 @@ AstLiteral Constant():
 }
 {
 	(
+		t=<BOOLEAN_LITERAL> {type=AstLiteral.LiteralType.Boolean;} |
 		t=<INTEGER_LITERAL> {type=AstLiteral.LiteralType.Integer;} |
 		t=<FLOATING_POINT_LITERAL> {type=AstLiteral.LiteralType.Float;} |
 		t=<CHARACTER_LITERAL> {type=AstLiteral.LiteralType.Character;} |
