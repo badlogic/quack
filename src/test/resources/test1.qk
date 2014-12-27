@@ -25,13 +25,22 @@ struct Vals {
 	val a: i32
 	var b: i32
 	static var c: i32
+	
+	// constructor is generated automatically from fields
 }
 
-struct Vals {
-	def Vals(a: i32, i:a) {
+struct Other {
+	val a: i32
+	val b: i32
+
+	// overrides default constructor
+	def Vals(a: i32, i:i32) {
+		self.a = a
+		self.b = i
 	}
 	
-	def vals(): i32 {
+	def ugh(): i32 {
+		return -1
 	}
 }
 
@@ -79,7 +88,7 @@ def testWhile() {
 }
 
 def testFor() {
-	for(val i = 0, val j: i32 = 10; i < 0; i=i+1, j=j+1) {
+	for(var i = 0, var j: i32 = 10; i < 0; i=i+1, j=j+1) {
 	}
 }
 
@@ -98,7 +107,7 @@ def expressions() {
 	i = 0
 	j = 10
 	
-	a + -b * 2 / 2 % 2 - 10 shl 2 + 2 shr 1
+	a + -b * 2 / 2 % 2 - 10 shl 2 + 2 shl 1
 	
 	a && b || !c
 	
