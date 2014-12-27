@@ -1,0 +1,5 @@
+module simple
+
+def test() {
+	return fib(a+1) + fib(a+b)
+}

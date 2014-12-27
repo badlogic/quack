@@ -431,7 +431,8 @@ AstStatement Statement():
 		s=Block() |
 		s=IfBlock() |
 		s=WhileBlock() |
-		s=ForBlock()
+		s=ForBlock() |
+		s=Return()
 	)
 	{
 		return s;
@@ -560,6 +561,20 @@ List<AstStatement> ForBottom():
 	[e=AssignmentOrExpression() {stmts.add(e);} ("," e=AssignmentOrExpression() {stmts.add(e);})*]
 	{
 		return stmts;
+	}
+}
+
+AstReturn Return():
+{
+	Token t;
+	AstExpression e=null;
+}
+{
+	t="return" [e=Expression()]
+	{
+		AstReturn ret = new AstReturn(t.beginLine, t.beginColumn);
+		ret.setValue(e);
+		return ret;
 	}
 }
 
@@ -758,19 +773,11 @@ AstExpression UnaryExpression():
 		} |
 		op="typeof" "(" e=UnaryExpression() ")"
 		{
-			AstUnaryOp unary = new AstUnaryOp(op.beginLine, op.beginColumn);
-			unary.setExpression(e);
-			unary.setOperator(op.image);
-			e = unary;
-		} |
-		op="return" [ e=UnaryExpression() ]
-		{
-			AstReturn ret = new AstReturn(op.beginLine, op.beginColumn);
-			if(e != null) {
-				ret.setValue(e);
-			}
-			e = ret;
-		}
+			AstUnaryOp typeof = new AstUnaryOp(op.beginLine, op.beginColumn);
+			typeof.setExpression(e);
+			typeof.setOperator(op.image);
+			e = typeof;
+		}		
 	)
 	{
 		return e;
@@ -789,8 +796,8 @@ AstExpression PostfixExpression():
 	(
 		{index=null; args=null; t=null;}
 		(
-			//t="[" index=Expression() "]" |
-			t="[" [ args=ArgumentExpressionList() ] "]" |
+			t="[" index=Expression() "]" |
+			t="(" [ args=ArgumentExpressionList() ] ")" |
 			"." t=<IDENTIFIER>
 		)
 		{

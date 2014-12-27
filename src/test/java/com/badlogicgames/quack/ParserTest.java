@@ -13,7 +13,7 @@ import com.badlogicgames.quack.parsing.Parser;
 public class ParserTest {
 	@Test
 	public void testParser() throws ParseException {
-		Parser parser = new Parser(open("test1.qk"));
+		Parser parser = new Parser(open("simple.qk"));
 		AstCompilationUnit cu = parser.CompilationUnit();
 		AstTraversal.walk((p,n)->{}, cu);
 		System.out.println(AstGraphViz.buildGraphViz(cu.getFunctions().get(0)));

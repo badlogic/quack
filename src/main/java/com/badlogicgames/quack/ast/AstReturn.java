@@ -1,6 +1,6 @@
 package com.badlogicgames.quack.ast;
 
-public class AstReturn extends AstExpression {
+public class AstReturn extends AstStatement {
 	private AstExpression value;
 	
 	public AstReturn (int line, int col) {
