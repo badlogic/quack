@@ -98,7 +98,7 @@ TOKEN: {
 	< TYPEOF: "typeof"> |
 	< CAST: "cast"> |
 	< ARRAY_GET: "[]get" > |
-	< ARRAY_SET: "[]set" >
+	< ARRAY_SET: "[]set" >	
 }
 
 // Inbuild Types
@@ -213,7 +213,7 @@ TOKEN :
 | < AT: "@" >
 }
 
-// Operators
+// Operators, shl and shr are defined in the keywords section to preceed IDENTIFIER
 TOKEN :
 {
   < ASSIGN: "=" >
@@ -239,8 +239,33 @@ TOKEN :
 | < XOR: "^" >
 | < REM: "%" >
 | < LSHIFT: "<<" >
-| < RSHIFT: ">>" >
 | < ELLIPSIS: "..." >
+}
+
+/* >'s need special attention due to generics syntax. */
+TOKEN :
+{
+  < RSHIFT: ">>" >
+  {
+     matchedToken.kind = GT;
+     ((Token.GTToken)matchedToken).realKind = RSHIFT;
+     input_stream.backup(1);
+  }
+| < GT: ">" >
+}
+
+Token RSHIFT():
+{}
+{
+  ( LOOKAHEAD({ getToken(1).kind == GT &&
+                ((Token.GTToken)getToken(1)).realKind == RSHIFT} )
+  ">" ">"
+  )
+  {
+  	Token t = new Token();
+  	t.image = ">>";
+  	return t;
+  }
 }
 
 //===========================================================================
@@ -320,23 +345,49 @@ AstStruct StructDefinition():
 {
 	Token b;
 	Token t;
+	List<String> g = null;
 	AstVariableDeclaration f;
 	List<AstVariableDeclaration> fields = new ArrayList<AstVariableDeclaration>();
 	AstFunction fu;
 	List<AstFunction> functions = new ArrayList<AstFunction>();
 }
 {
-	b="struct" t=<IDENTIFIER> "{" 
+	b="struct" t=<IDENTIFIER> [g=GenericParameters()] "{" 
 		(f=FieldDeclaration() {fields.add(f);})*
 		(fu=FunctionDefinition() {functions.add(fu);})*
 	"}"
 	{
 		AstStruct struct = new AstStruct(b.beginLine, b.beginColumn);
 		struct.setName(t.image);
+		if(g!=null) struct.getGenericTypes().addAll(g);
 		struct.getFields().addAll(fields);
 		struct.getFunctions().addAll(functions);
 		return struct;
 	}	
+}
+
+List<String> GenericParameters():
+{
+	List<String> types = new ArrayList<String>();
+	String t;
+}
+{
+	<LT> 
+		(t=GenericParameter() {types.add(t);}) 
+		("," t=GenericParameter() {types.add(t);})* <GT>
+	{
+		return types;
+	}
+}
+
+String GenericParameter():
+{
+	Token t=null;
+	AstType ty=null;
+}
+{
+	(t=<IDENTIFIER> {return t.image;}) |
+	(ty=BuildInType() {return ty.getName();})	
 }
 
 AstVariableDeclaration FieldDeclaration():
@@ -725,7 +776,7 @@ AstExpression ShiftExpression():
 	AstExpression e;
 }
 {
-	last=AddExpression() ((op="<<" | op=">>") e=AddExpression()
+	last=AddExpression() ((op="<<" | op=RSHIFT()) e=AddExpression()
 	{
 			AstBinaryOp logical = new AstBinaryOp(op.beginLine, op.beginColumn);
 			logical.setLeftHandSide(last);
@@ -830,6 +881,7 @@ AstExpression PostfixExpression():
 {
 	AstExpression e;
 	AstExpression index;
+	List<AstType> g=null;
 	List<AstExpression> args;
 	Token t;
 }
@@ -839,7 +891,7 @@ AstExpression PostfixExpression():
 		{index=null; args=null; t=null;}
 		(
 			t="[" index=Expression() "]" |
-			t="(" [ args=ArgumentExpressionList() ] ")" |
+			[g=GenericTypeList()] t="(" [ args=ArgumentExpressionList() ] ")" |
 			"." t=<IDENTIFIER>
 		)
 		{
@@ -850,6 +902,7 @@ AstExpression PostfixExpression():
 				e = lookup;
 			} else if(args != null) {
 				AstCall call = new AstCall(t.beginLine, t.beginColumn);
+				if(g != null) call.getGenericTypes().addAll(g);
 				call.setTarget(e);
 				call.getArguments().addAll(args);
 				e = call;
@@ -898,6 +951,18 @@ AstArgumentExpression ArgumentExpression():
 		}		
 		arg.setExpression(e);
 		return arg;
+	}
+}
+
+List<AstType> GenericTypeList():
+{
+	AstType t;
+	List<AstType> types = new ArrayList<AstType>();
+}
+{
+	<LT> t=Type() {types.add(t);} ("," t=Type() {types.add(t);})* <GT>
+	{
+		return types;
 	}
 }
 
@@ -968,11 +1033,12 @@ AstType Type():
 {
 	AstType t=null;
 	Token to=null;
+	List<AstType> g = null;
 }
 {
 	(
 		t=BuildInType() |
-		to=<IDENTIFIER>
+		to=<IDENTIFIER> [ g=GenericTypeList() ]
 	)
 	{
 		if(t != null) {
@@ -980,6 +1046,7 @@ AstType Type():
 		} else {
 			AstType type = new AstType(to.beginLine, to.beginColumn);
 			type.setName(to.image);
+			if(g!=null) type.getGenericTypes().addAll(g);
 			return type;
 		}
 	} 

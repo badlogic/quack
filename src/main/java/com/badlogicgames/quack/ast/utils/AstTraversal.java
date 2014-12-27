@@ -76,6 +76,9 @@ public class AstTraversal {
 			}
 		} else if(node instanceof AstCall) {
 			walk(visitor, node, ((AstCall)node).getTarget(), excluded);
+			for(AstType generic: ((AstCall)node).getGenericTypes()) {
+				walk(visitor, node, generic, excluded);				
+			}
 			for(AstExpression expr: ((AstCall)node).getArguments()) {
 				walk(visitor, node, expr, excluded);
 			}
@@ -141,11 +144,14 @@ public class AstTraversal {
 				walk(visitor, node, fun, excluded);
 			}
 		} else if(node instanceof AstType) {
-			// nothing to do here
+			for(AstType generic: ((AstType)node).getGenericTypes()) {
+				walk(visitor, node, generic, excluded);
+			}
 		} else if(node instanceof AstUnaryOp) {
 			walk(visitor, node, ((AstUnaryOp)node).getExpression(), excluded);
 		} else if(node instanceof AstVariableDeclaration) {
 			walk(visitor, node, ((AstVariableDeclaration)node).getType(), excluded);
+			walk(visitor, node, ((AstVariableDeclaration)node).getInitializer(), excluded);
 		} else if(node instanceof AstWhile) {
 			walk(visitor, node, ((AstWhile)node).getCondition(), excluded);
 			walk(visitor, node, ((AstWhile)node).getBlock(), excluded);

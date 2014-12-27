@@ -173,9 +173,11 @@ public interface ParserConstants {
   /** RegularExpression Id. */
   int LSHIFT = 89;
   /** RegularExpression Id. */
-  int RSHIFT = 90;
+  int ELLIPSIS = 90;
   /** RegularExpression Id. */
-  int ELLIPSIS = 91;
+  int RSHIFT = 91;
+  /** RegularExpression Id. */
+  int GT = 92;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -276,8 +278,8 @@ public interface ParserConstants {
     "\"^\"",
     "\"%\"",
     "\"<<\"",
-    "\">>\"",
     "\"...\"",
+    "\">>\"",
     "\">\"",
   };
 

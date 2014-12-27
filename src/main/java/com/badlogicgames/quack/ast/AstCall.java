@@ -5,7 +5,8 @@ import java.util.List;
 
 public class AstCall extends AstExpression {
 	private AstExpression target;
-	private final List<AstExpression> arguments = new ArrayList<AstExpression>();
+	private final List<AstType> genericTypes = new ArrayList<>();
+	private final List<AstExpression> arguments = new ArrayList<>();
 	
 	public AstCall (int line, int col) {
 		super(line, col);
@@ -13,6 +14,10 @@ public class AstCall extends AstExpression {
 
 	public List<AstExpression> getArguments () {
 		return arguments;
+	}
+	
+	public List<AstType> getGenericTypes () {
+		return genericTypes;
 	}
 
 	public AstExpression getTarget () {

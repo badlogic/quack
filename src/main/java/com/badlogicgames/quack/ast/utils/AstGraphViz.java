@@ -110,7 +110,8 @@ public class AstGraphViz {
 		} else if(node instanceof AstReturn) {
 			return "Return";
 		} else if(node instanceof AstStruct) {
-			return "Struct " + ((AstStruct)node).getName();
+			AstStruct struct = ((AstStruct)node);
+			return "Struct " + struct.getName() + (struct.getGenericTypes().size() > 0?" <" + struct.getGenericTypes() + ">":"");
 		} else if(node instanceof AstType) {
 			return "type: " + ((AstType)node).getName();
 		} else if(node instanceof AstUnaryOp) {

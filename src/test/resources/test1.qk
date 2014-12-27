@@ -79,7 +79,7 @@ def testWhile() {
 }
 
 def testFor() {
-	for(val i: i32, val j: i32; i < 0; i=i+1, j=j+1) {
+	for(val i = 0, val j: i32 = 10; i < 0; i=i+1, j=j+1) {
 	}
 }
 
@@ -98,7 +98,7 @@ def expressions() {
 	i = 0
 	j = 10
 	
-	a + -b * 2 / 2 % 2 - 10 << 2 + 2 >> 1
+	a + -b * 2 / 2 % 2 - 10 shl 2 + 2 shr 1
 	
 	a && b || !c
 	
@@ -139,32 +139,34 @@ def testDefaultParams(x: i32=2, y: i32=cos(20 * 39), z: i32) {
 	alloc(len * typeof(i32))
 }
 
-struct ArrayI32 {
-	val len: i32
-	val ptr: i64 
-
-	def ArrayI32(len: i32): ArrayI32 {
-		self.ptr = alloc(len * sizeof(i32))
-		self.len = len
-		return self
-	}
-	def []get (index: i32): i32 {
-		return memget32(ptr + index << 2)		
-	}
-	
-	def []set (index: i32, value: i32): i32 {
-		memset32(ptr + index << 2, value)
-	}
-}
-
-def array() {
-	val a: ArrayI32	
-	a = ArrayI32(10)	
-	a[10] = a[2] * 10 + 3
-}
-
 def init() {
 	val a = 2
 	val a: i32 = 3
 	var b = Vals(x: 2, y: 3)
+}
+
+struct Array <T> {
+	val len: i32	
+	val ptr: i64
+	
+	def Array(len: i32=0) {
+		self.len = len
+		self.ptr = __intrinsic_alloc<T>(len * sizeof(T))
+	}
+	
+	def []get(index: i32): T {
+		return __intrinsic_get<T>(ptr + index * sizeof(T))
+	}
+	
+	def []set(index: i32, value: T) {
+		__intrinsic_set<T>(ptr + index * sizeof(T), value)
+	}
+}
+
+def generic() {
+	val g = Array<i32>(10)
+	g[32] = g[20]
+	println(g.len)
+	
+	val o = a + 2 * Array<Array<Array<i32>>>(10).len > 0
 }

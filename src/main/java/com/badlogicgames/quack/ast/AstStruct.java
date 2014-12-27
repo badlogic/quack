@@ -6,6 +6,7 @@ import java.util.List;
 
 public class AstStruct extends AstNode {
 	private String name;
+	private final List<String> genericTypes = new ArrayList<>();
 	private final List<AstVariableDeclaration> fields = new ArrayList<>();
 	private final List<AstFunction> functions = new ArrayList<>();
 
@@ -19,6 +20,10 @@ public class AstStruct extends AstNode {
 	
 	public void setName (String name) {
 		this.name = name;
+	}
+
+	public List<String> getGenericTypes () {
+		return genericTypes;
 	}
 
 	public List<AstVariableDeclaration> getFields () {
