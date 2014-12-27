@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.badlogicgames.quack.ast.AstArgument;
+import com.badlogicgames.quack.ast.AstArgumentExpression;
 import com.badlogicgames.quack.ast.AstArrayLookup;
 import com.badlogicgames.quack.ast.AstBinaryOp;
 import com.badlogicgames.quack.ast.AstBlock;
@@ -60,6 +61,8 @@ public class AstTraversal {
 		// visit any children
 		if(node instanceof AstArgument) {
 			walk(visitor, node, ((AstArgument)node).getType(), excluded);
+		} else if(node instanceof AstArgumentExpression) {
+			walk(visitor, node, ((AstArgumentExpression)node).getExpression(), excluded);
 		} else if(node instanceof AstArrayLookup) {		
 			walk(visitor, node, ((AstArrayLookup)node).getArray(), excluded);
 			walk(visitor, node, ((AstArrayLookup)node).getIndex(), excluded);

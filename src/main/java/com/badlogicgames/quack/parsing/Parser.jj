@@ -121,6 +121,8 @@ TOKEN: {
 
 // Literals
 TOKEN : {
+  < NIL_LITERAL: "nil" >
+|
   < BOOLEAN_LITERAL: "true" | "false" >
 |
   < INTEGER_LITERAL:
@@ -846,10 +848,30 @@ List<AstExpression> ArgumentExpressionList():
 	AstExpression e;
 }
 {
-	e=Expression() {args.add(e);}
-	("," e=Expression() {args.add(e);})*
+	e=ArgumentExpression() {args.add(e);}
+	("," e=ArgumentExpression() {args.add(e);})*
 	{
 		return args;
+	}
+}
+
+AstArgumentExpression ArgumentExpression():
+{
+	Token t=null;
+	AstExpression e;
+}
+{
+	[ t=<IDENTIFIER> ":" ] e=Expression()
+	{
+		AstArgumentExpression arg = null;
+		if(t != null) {
+			arg = new AstArgumentExpression(t.beginLine, t.beginColumn);
+			arg.setFieldName(t.image);
+		} else {
+			arg = new AstArgumentExpression(e.getLine(), e.getCol());
+		}		
+		arg.setExpression(e);
+		return arg;
 	}
 }
 
@@ -882,6 +904,7 @@ AstLiteral Constant():
 }
 {
 	(
+		t=<NIL_LITERAL> {type=AstLiteral.LiteralType.Nil;} |
 		t=<BOOLEAN_LITERAL> {type=AstLiteral.LiteralType.Boolean;} |
 		t=<INTEGER_LITERAL> {type=AstLiteral.LiteralType.Integer;} |
 		t=<FLOATING_POINT_LITERAL> {type=AstLiteral.LiteralType.Float;} |

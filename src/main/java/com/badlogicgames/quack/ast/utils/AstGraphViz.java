@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.badlogicgames.quack.ast.AstArgument;
+import com.badlogicgames.quack.ast.AstArgumentExpression;
 import com.badlogicgames.quack.ast.AstArrayLookup;
 import com.badlogicgames.quack.ast.AstBinaryOp;
 import com.badlogicgames.quack.ast.AstBlock;
@@ -74,6 +75,8 @@ public class AstGraphViz {
 	// visit any children
 		if(node instanceof AstArgument) {
 			return " Argument " + ((AstArgument)node).getName() + ": " + ((AstArgument)node).getType().getName();
+		} else if(node instanceof AstArgumentExpression) {
+			return "Arg. Expr." + (((AstArgumentExpression)node).getFieldName()!=null?"(" + ((AstArgumentExpression)node).getFieldName() + ")":"");
 		} else if(node instanceof AstArrayLookup) {
 			return "[]";
 		} else if(node instanceof AstBinaryOp) {

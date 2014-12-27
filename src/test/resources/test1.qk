@@ -108,6 +108,7 @@ def expressions() {
 }
 
 def literals() {
+	nil
 	true
 	false
 	2300
@@ -121,4 +122,14 @@ def literals() {
 
 def testCast() {
 	a + b * cast<MyType>(230 + 2349 * (3 + 4))
+}
+
+def testNil() {
+	val m: Vals
+	m = nil
+}
+
+def testInitializer() {
+	val m: Vals
+	m= Vals(x: 20, y: 42)
 }
