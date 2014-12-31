@@ -183,3 +183,13 @@ def generic() {
 def genFunc<T,V>(i: T, v:V): T {
 	return i + v
 }
+
+def funcPtr(f: (): i32, a: i32) {
+	var i: (i: i32, u: i32): i32 = 0
+	var i: (i: i32, u: i32): i32 = (i: i32, u: i32): i32 { }
+}
+
+def genFunPtr<T, V>(f: <T>(i: T, e: T): T) {
+	var i: <T, V>(i: T, u: V): T = 0
+	var v = <T, V>(i: T, u: V): T { }
+}

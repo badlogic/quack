@@ -1036,20 +1036,29 @@ AstType Type():
 	AstType t=null;
 	Token to=null;
 	List<AstType> g = null;
+	List<AstArgument> args = null;
+	AstType rt = null;
 }
 {
 	(
 		t=BuildInType() |
-		to=<IDENTIFIER> [ g=GenericTypeList() ]
+		to=<IDENTIFIER> [ g=GenericTypeList() ] |
+		[g=GenericTypeList()] args=ArgumentList() [":" rt=Type() ]
 	)
 	{
 		if(t != null) {
 			return t;
-		} else {
+		} else if(to != null) {
 			AstType type = new AstType(to.beginLine, to.beginColumn);
 			type.setName(to.image);
 			if(g!=null) type.getGenericTypes().addAll(g);
 			return type;
-		}
+		} else {
+			AstType type = new AstType(this.token.beginLine, this.token.beginColumn);
+			if(g!=null) type.getGenericTypes().addAll(g);
+			type.getArguments().addAll(args);
+			type.setReturnType(rt);
+			return type;
+		}		
 	} 
 }

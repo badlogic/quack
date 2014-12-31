@@ -61,7 +61,7 @@ public class AstTraversal {
 		// visit any children
 		if(node instanceof AstArgument) {
 			walk(visitor, node, ((AstArgument)node).getType(), excluded);
-			walk(visitor, node, ((AstArgument)node).getDefaultValue(), excluded);
+			walk(visitor, node, ((AstArgument)node).getDefaultValue(), excluded);			
 		} else if(node instanceof AstArgumentExpression) {
 			walk(visitor, node, ((AstArgumentExpression)node).getExpression(), excluded);
 		} else if(node instanceof AstArrayLookup) {		
@@ -147,6 +147,10 @@ public class AstTraversal {
 			for(AstType generic: ((AstType)node).getGenericTypes()) {
 				walk(visitor, node, generic, excluded);
 			}
+			for(AstArgument arg: ((AstType)node).getArguments()) {
+				walk(visitor, node, arg, excluded);
+			}
+			walk(visitor, node, ((AstType)node).getReturnType(), excluded);
 		} else if(node instanceof AstUnaryOp) {
 			walk(visitor, node, ((AstUnaryOp)node).getExpression(), excluded);
 		} else if(node instanceof AstVariableDeclaration) {
