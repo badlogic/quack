@@ -2,7 +2,7 @@ package com.badlogicgames.quack.ast;
 
 public class AstLiteral extends AstExpression {
 	public static enum LiteralType {
-		Nil,
+		Null,
 		Boolean,
 		Integer,
 		Float,

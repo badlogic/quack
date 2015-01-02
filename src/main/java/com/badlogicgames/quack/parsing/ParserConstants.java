@@ -77,7 +77,7 @@ public interface ParserConstants {
   /** RegularExpression Id. */
   int F64 = 41;
   /** RegularExpression Id. */
-  int NIL_LITERAL = 42;
+  int NULL_LITERAL = 42;
   /** RegularExpression Id. */
   int BOOLEAN_LITERAL = 43;
   /** RegularExpression Id. */
@@ -216,17 +216,17 @@ public interface ParserConstants {
     "\"[]get\"",
     "\"[]set\"",
     "\"bool\"",
-    "\"u8\"",
-    "\"u16\"",
-    "\"u32\"",
-    "\"u64\"",
-    "\"i8\"",
-    "\"i16\"",
-    "\"i32\"",
-    "\"i64\"",
-    "\"f32\"",
-    "\"f64\"",
-    "\"nil\"",
+    "\"uint8\"",
+    "\"uint16\"",
+    "\"uint32\"",
+    "\"uint64\"",
+    "\"int8\"",
+    "\"int16\"",
+    "\"int32\"",
+    "\"int64\"",
+    "\"float32\"",
+    "\"float64\"",
+    "\"null\"",
     "<BOOLEAN_LITERAL>",
     "<INTEGER_LITERAL>",
     "<DECIMAL_LITERAL>",

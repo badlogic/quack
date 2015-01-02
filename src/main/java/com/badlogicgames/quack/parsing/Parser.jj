@@ -105,23 +105,23 @@ TOKEN: {
 TOKEN: {
 	< BOOL: "bool" > |
 
-	< U8: "u8" > |
-	< U16: "u16" > |
-	< U32: "u32" > |
-	< U64: "u64" > |
+	< U8: "uint8" > |
+	< U16: "uint16" > |
+	< U32: "uint32" > |
+	< U64: "uint64" > |
 	
-	< I8: "i8" > |
-	< I16: "i16" > |
-	< I32: "i32" > |
-	< I64: "i64" > |
+	< I8: "int8" > |
+	< I16: "int16" > |
+	< I32: "int32" > |
+	< I64: "int64" > |
 	
-	< F32: "f32" > |
-	< F64: "f64" >
+	< F32: "float32" > |
+	< F64: "float64" >
 }
 
 // Literals
 TOKEN : {
-  < NIL_LITERAL: "nil" >
+  < NULL_LITERAL: "null" >
 |
   < BOOLEAN_LITERAL: "true" | "false" >
 |
@@ -995,7 +995,7 @@ AstLiteral Constant():
 }
 {
 	(
-		t=<NIL_LITERAL> {type=AstLiteral.LiteralType.Nil;} |
+		t=<NULL_LITERAL> {type=AstLiteral.LiteralType.Null;} |
 		t=<BOOLEAN_LITERAL> {type=AstLiteral.LiteralType.Boolean;} |
 		t=<INTEGER_LITERAL> {type=AstLiteral.LiteralType.Integer;} |
 		t=<FLOATING_POINT_LITERAL> {type=AstLiteral.LiteralType.Float;} |
@@ -1017,9 +1017,9 @@ AstType BuildInType():
 {
 	(
 		t="bool" |
-		t="u8" | t="u16" | t="u32" | t="u64" |
-		t="i8" | t="i16" | t="i32" | t="i64" |
-		t="f32" | t="f64"
+		t="uint8" | t="uint16" | t="uint32" | t="uint64" |
+		t="int8" | t="int16" | t="int32" | t="int64" |
+		t="float32" | t="float64"
 	)
 	{
 		AstType type = new AstType(t.beginLine, t.beginColumn);
