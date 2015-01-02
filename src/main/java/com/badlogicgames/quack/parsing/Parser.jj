@@ -116,9 +116,7 @@ TOKEN: {
 	< I64: "i64" > |
 	
 	< F32: "f32" > |
-	< F64: "f64" > |
-	< ANY: "any" > |
-	< ANYREF: "anyref" >
+	< F64: "f64" >
 }
 
 // Literals
@@ -1021,8 +1019,7 @@ AstType BuildInType():
 		t="bool" |
 		t="u8" | t="u16" | t="u32" | t="u64" |
 		t="i8" | t="i16" | t="i32" | t="i64" |
-		t="f32" | t="f64" |
-		t="any" | t="anyref"
+		t="f32" | t="f64"
 	)
 	{
 		AstType type = new AstType(t.beginLine, t.beginColumn);

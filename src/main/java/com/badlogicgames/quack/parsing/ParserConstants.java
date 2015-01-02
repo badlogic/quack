@@ -77,107 +77,103 @@ public interface ParserConstants {
   /** RegularExpression Id. */
   int F64 = 41;
   /** RegularExpression Id. */
-  int ANY = 42;
+  int NIL_LITERAL = 42;
   /** RegularExpression Id. */
-  int ANYREF = 43;
+  int BOOLEAN_LITERAL = 43;
   /** RegularExpression Id. */
-  int NIL_LITERAL = 44;
+  int INTEGER_LITERAL = 44;
   /** RegularExpression Id. */
-  int BOOLEAN_LITERAL = 45;
+  int DECIMAL_LITERAL = 45;
   /** RegularExpression Id. */
-  int INTEGER_LITERAL = 46;
+  int HEX_LITERAL = 46;
   /** RegularExpression Id. */
-  int DECIMAL_LITERAL = 47;
+  int FLOATING_POINT_LITERAL = 47;
   /** RegularExpression Id. */
-  int HEX_LITERAL = 48;
+  int DECIMAL_FLOATING_POINT_LITERAL = 48;
   /** RegularExpression Id. */
-  int FLOATING_POINT_LITERAL = 49;
+  int DECIMAL_EXPONENT = 49;
   /** RegularExpression Id. */
-  int DECIMAL_FLOATING_POINT_LITERAL = 50;
+  int CHARACTER_LITERAL = 50;
   /** RegularExpression Id. */
-  int DECIMAL_EXPONENT = 51;
+  int STRING_LITERAL = 51;
   /** RegularExpression Id. */
-  int CHARACTER_LITERAL = 52;
+  int IDENTIFIER = 52;
   /** RegularExpression Id. */
-  int STRING_LITERAL = 53;
+  int LETTER = 53;
   /** RegularExpression Id. */
-  int IDENTIFIER = 54;
+  int PART_LETTER = 54;
   /** RegularExpression Id. */
-  int LETTER = 55;
+  int LPAREN = 55;
   /** RegularExpression Id. */
-  int PART_LETTER = 56;
+  int RPAREN = 56;
   /** RegularExpression Id. */
-  int LPAREN = 57;
+  int LBRACE = 57;
   /** RegularExpression Id. */
-  int RPAREN = 58;
+  int RBRACE = 58;
   /** RegularExpression Id. */
-  int LBRACE = 59;
+  int LBRACKET = 59;
   /** RegularExpression Id. */
-  int RBRACE = 60;
+  int RBRACKET = 60;
   /** RegularExpression Id. */
-  int LBRACKET = 61;
+  int SEMICOLON = 61;
   /** RegularExpression Id. */
-  int RBRACKET = 62;
+  int COMMA = 62;
   /** RegularExpression Id. */
-  int SEMICOLON = 63;
+  int DOT = 63;
   /** RegularExpression Id. */
-  int COMMA = 64;
+  int AT = 64;
   /** RegularExpression Id. */
-  int DOT = 65;
+  int ASSIGN = 65;
   /** RegularExpression Id. */
-  int AT = 66;
+  int LT = 66;
   /** RegularExpression Id. */
-  int ASSIGN = 67;
+  int BANG = 67;
   /** RegularExpression Id. */
-  int LT = 68;
+  int TILDE = 68;
   /** RegularExpression Id. */
-  int BANG = 69;
+  int HOOK = 69;
   /** RegularExpression Id. */
-  int TILDE = 70;
+  int COLON = 70;
   /** RegularExpression Id. */
-  int HOOK = 71;
+  int EQ = 71;
   /** RegularExpression Id. */
-  int COLON = 72;
+  int LE = 72;
   /** RegularExpression Id. */
-  int EQ = 73;
+  int GE = 73;
   /** RegularExpression Id. */
-  int LE = 74;
+  int NE = 74;
   /** RegularExpression Id. */
-  int GE = 75;
+  int SC_OR = 75;
   /** RegularExpression Id. */
-  int NE = 76;
+  int SC_AND = 76;
   /** RegularExpression Id. */
-  int SC_OR = 77;
+  int INCR = 77;
   /** RegularExpression Id. */
-  int SC_AND = 78;
+  int DECR = 78;
   /** RegularExpression Id. */
-  int INCR = 79;
+  int PLUS = 79;
   /** RegularExpression Id. */
-  int DECR = 80;
+  int MINUS = 80;
   /** RegularExpression Id. */
-  int PLUS = 81;
+  int STAR = 81;
   /** RegularExpression Id. */
-  int MINUS = 82;
+  int SLASH = 82;
   /** RegularExpression Id. */
-  int STAR = 83;
+  int BIT_AND = 83;
   /** RegularExpression Id. */
-  int SLASH = 84;
+  int BIT_OR = 84;
   /** RegularExpression Id. */
-  int BIT_AND = 85;
+  int XOR = 85;
   /** RegularExpression Id. */
-  int BIT_OR = 86;
+  int REM = 86;
   /** RegularExpression Id. */
-  int XOR = 87;
+  int LSHIFT = 87;
   /** RegularExpression Id. */
-  int REM = 88;
+  int ELLIPSIS = 88;
   /** RegularExpression Id. */
-  int LSHIFT = 89;
+  int RSHIFT = 89;
   /** RegularExpression Id. */
-  int ELLIPSIS = 90;
-  /** RegularExpression Id. */
-  int RSHIFT = 91;
-  /** RegularExpression Id. */
-  int GT = 92;
+  int GT = 90;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -230,8 +226,6 @@ public interface ParserConstants {
     "\"i64\"",
     "\"f32\"",
     "\"f64\"",
-    "\"any\"",
-    "\"anyref\"",
     "\"nil\"",
     "<BOOLEAN_LITERAL>",
     "<INTEGER_LITERAL>",
