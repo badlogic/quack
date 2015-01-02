@@ -99,13 +99,17 @@ GenericTypeList ::= "<" Type ("," Type)* ">"
 
 PrimaryExpression ::= IDENTIFIER | Constant | "(" Expression ")"
 
-Constant ::= NIL_LITERAL | BOOLEAN_LITERAL | FLOATING_POINT_LITERAL | CHARACTER_LITERAL | STRING_LITERAL
+Constant ::= "null" | ("true" | "false") | FLOATING_POINT_LITERAL | CHARACTER_LITERAL | STRING_LITERAL
 
 BuildInType ::= "bool" | 
-                "u8" | "u16" | "u32" | "u64" |
-                "s8" | "s16" | "s32" | "s64" |
-                "f32" | "f64"
+                "uint8" | "uint16" | "uint32" | "uint64" |
+                "int8" | "int16" | "int32" | "int64" |
+                "float32" | "float64"
 
 Type ::= BuildInType |
          IDENTIFIER (GenericTypeList)? |
          (GenericTypeList)? ArgumentList (":" Type)
+
+IDENTIFIER ::= LETTER (PART_LETTER)*
+LETTER ::= ('A'-'Z'|'_'|'a'-'z')
+PART_LETTER ::= ('0'-'9'|'A'-'Z'|'_'|'a'-'z')
