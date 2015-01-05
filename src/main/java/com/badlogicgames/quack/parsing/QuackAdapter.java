@@ -9,6 +9,16 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class QuackAdapter implements QuackListener {
     @Override
+    public void enterCast(@NotNull QuackParser.CastContext ctx) {
+
+    }
+
+    @Override
+    public void exitCast(@NotNull QuackParser.CastContext ctx) {
+
+    }
+
+    @Override
     public void enterArgument(@NotNull QuackParser.ArgumentContext ctx) {
 
     }
@@ -99,6 +109,26 @@ public class QuackAdapter implements QuackListener {
     }
 
     @Override
+    public void enterFieldDereference(@NotNull QuackParser.FieldDereferenceContext ctx) {
+
+    }
+
+    @Override
+    public void exitFieldDereference(@NotNull QuackParser.FieldDereferenceContext ctx) {
+
+    }
+
+    @Override
+    public void enterArrayAccess(@NotNull QuackParser.ArrayAccessContext ctx) {
+
+    }
+
+    @Override
+    public void exitArrayAccess(@NotNull QuackParser.ArrayAccessContext ctx) {
+
+    }
+
+    @Override
     public void enterStatementList(@NotNull QuackParser.StatementListContext ctx) {
 
     }
@@ -179,6 +209,16 @@ public class QuackAdapter implements QuackListener {
     }
 
     @Override
+    public void enterBinaryOp(@NotNull QuackParser.BinaryOpContext ctx) {
+
+    }
+
+    @Override
+    public void exitBinaryOp(@NotNull QuackParser.BinaryOpContext ctx) {
+
+    }
+
+    @Override
     public void enterIfBlock(@NotNull QuackParser.IfBlockContext ctx) {
 
     }
@@ -189,22 +229,22 @@ public class QuackAdapter implements QuackListener {
     }
 
     @Override
+    public void enterCall(@NotNull QuackParser.CallContext ctx) {
+
+    }
+
+    @Override
+    public void exitCall(@NotNull QuackParser.CallContext ctx) {
+
+    }
+
+    @Override
     public void enterElseIfBlock(@NotNull QuackParser.ElseIfBlockContext ctx) {
 
     }
 
     @Override
     public void exitElseIfBlock(@NotNull QuackParser.ElseIfBlockContext ctx) {
-
-    }
-
-    @Override
-    public void enterExpression(@NotNull QuackParser.ExpressionContext ctx) {
-
-    }
-
-    @Override
-    public void exitExpression(@NotNull QuackParser.ExpressionContext ctx) {
 
     }
 
@@ -239,6 +279,16 @@ public class QuackAdapter implements QuackListener {
     }
 
     @Override
+    public void enterUnary(@NotNull QuackParser.UnaryContext ctx) {
+
+    }
+
+    @Override
+    public void exitUnary(@NotNull QuackParser.UnaryContext ctx) {
+
+    }
+
+    @Override
     public void enterVariableDeclaration(@NotNull QuackParser.VariableDeclarationContext ctx) {
 
     }
@@ -269,12 +319,42 @@ public class QuackAdapter implements QuackListener {
     }
 
     @Override
+    public void enterAnonymousFunction(@NotNull QuackParser.AnonymousFunctionContext ctx) {
+
+    }
+
+    @Override
+    public void exitAnonymousFunction(@NotNull QuackParser.AnonymousFunctionContext ctx) {
+
+    }
+
+    @Override
+    public void enterShl(@NotNull QuackParser.ShlContext ctx) {
+
+    }
+
+    @Override
+    public void exitShl(@NotNull QuackParser.ShlContext ctx) {
+
+    }
+
+    @Override
     public void enterReturnExpression(@NotNull QuackParser.ReturnExpressionContext ctx) {
 
     }
 
     @Override
     public void exitReturnExpression(@NotNull QuackParser.ReturnExpressionContext ctx) {
+
+    }
+
+    @Override
+    public void enterShr(@NotNull QuackParser.ShrContext ctx) {
+
+    }
+
+    @Override
+    public void exitShr(@NotNull QuackParser.ShrContext ctx) {
 
     }
 

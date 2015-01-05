@@ -259,8 +259,42 @@ public class AstGenerator extends QuackAdapter {
     }
 
     @Override
-    public void exitExpression(@NotNull QuackParser.ExpressionContext ctx) {
+    public void exitFieldDereference(@NotNull QuackParser.FieldDereferenceContext ctx) {
 
+    }
+
+    @Override
+    public void exitAnonymousFunction(@NotNull QuackParser.AnonymousFunctionContext ctx) {
+
+    }
+
+    @Override
+    public void exitCall(@NotNull QuackParser.CallContext ctx) {
+        
+    }
+
+    @Override
+    public void exitArrayAccess(@NotNull QuackParser.ArrayAccessContext ctx) {
+
+    }
+
+    @Override
+    public void exitCast(@NotNull QuackParser.CastContext ctx) {
+
+    }
+
+    @Override
+    public void exitBinaryOp(@NotNull QuackParser.BinaryOpContext ctx) {
+        AstBinaryOp binaryOp = new AstBinaryOp(ctx.start.getLine(), ctx.start.getCharPositionInLine());
+        binaryOp.setLeftHandSide((AstExpression) lookup.get(ctx.expression(0)));
+        if(ctx.shl() != null) {
+            binaryOp.setOperator("<<");
+        } else if(ctx.shr() != null) {
+            binaryOp.setOperator(">>");
+        } else {
+            binaryOp.setOperator(ctx.op.getText());
+        }
+        binaryOp.setLeftHandSide((AstExpression) lookup.get(ctx.expression(1)));
     }
 
     @Override
