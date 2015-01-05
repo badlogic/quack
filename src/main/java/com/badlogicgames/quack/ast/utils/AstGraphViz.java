@@ -8,32 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.badlogicgames.quack.ast.AstArgument;
-import com.badlogicgames.quack.ast.AstArgumentExpression;
-import com.badlogicgames.quack.ast.AstArrayLookup;
-import com.badlogicgames.quack.ast.AstBinaryOp;
-import com.badlogicgames.quack.ast.AstBlock;
-import com.badlogicgames.quack.ast.AstCall;
-import com.badlogicgames.quack.ast.AstCast;
-import com.badlogicgames.quack.ast.AstCompilationUnit;
-import com.badlogicgames.quack.ast.AstElif;
-import com.badlogicgames.quack.ast.AstExpression;
-import com.badlogicgames.quack.ast.AstFor;
-import com.badlogicgames.quack.ast.AstFunction;
-import com.badlogicgames.quack.ast.AstGetElement;
-import com.badlogicgames.quack.ast.AstIf;
-import com.badlogicgames.quack.ast.AstImport;
-import com.badlogicgames.quack.ast.AstLiteral;
-import com.badlogicgames.quack.ast.AstModule;
-import com.badlogicgames.quack.ast.AstNode;
-import com.badlogicgames.quack.ast.AstReference;
-import com.badlogicgames.quack.ast.AstReturn;
-import com.badlogicgames.quack.ast.AstStatement;
-import com.badlogicgames.quack.ast.AstStruct;
-import com.badlogicgames.quack.ast.AstType;
-import com.badlogicgames.quack.ast.AstUnaryOp;
-import com.badlogicgames.quack.ast.AstVariableDeclaration;
-import com.badlogicgames.quack.ast.AstWhile;
+import com.badlogicgames.quack.ast.*;
 
 public class AstGraphViz {
 	public static void showGraphViz (AstNode node) {
@@ -76,19 +51,21 @@ public class AstGraphViz {
 		if(node instanceof AstArgument) {
 			return " Argument " + ((AstArgument)node).getName() + ": " + ((AstArgument)node).getType().getName();
 		} else if(node instanceof AstArgumentExpression) {
-			return "Arg. Expr." + (((AstArgumentExpression)node).getFieldName()!=null?"(" + ((AstArgumentExpression)node).getFieldName() + ")":"");
+			return "Arg. Expr." + (((AstArgumentExpression)node).getArgumentName() !=null?"(" + ((AstArgumentExpression)node).getArgumentName() + ")":"");
 		} else if(node instanceof AstArrayLookup) {
 			return "[]";
 		} else if(node instanceof AstBinaryOp) {
 			return ((AstBinaryOp)node).getOperator().name();
 		} else if(node instanceof AstBlock) {
 			return "Block";
+		} else if(node instanceof AstBreak) {
+			return "Break";
 		} else if(node instanceof AstCall) {
 			return "Call";
-		} else if(node instanceof AstCast) {
-			return "Cast";
 		} else if(node instanceof AstCompilationUnit) {
 			return "Compilation Unit";
+		} else if(node instanceof AstContinue) {
+			return "Continue";
 		} else if(node instanceof AstElif) {
 			return "Elif";
 		} else if(node instanceof AstFor) {

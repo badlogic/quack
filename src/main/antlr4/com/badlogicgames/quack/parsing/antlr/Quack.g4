@@ -71,8 +71,8 @@ statement
     |   forBlock
     |   returnExpression
     |   assignmentOrExpression
-    |   'continue'
-    |   'break'
+    |   cont='continue'
+    |   brk='break'
     ;
 
 block
@@ -80,9 +80,9 @@ block
     ;
 
 ifBlock
-    :   'if' '(' expression ')' block
+    :   'if' '(' expression ')' tb=block
         (elseIfBlock)*
-        ('else' block)?
+        ('else' eb=block)?
     ;
 
 elseIfBlock
@@ -130,7 +130,7 @@ expression
     ;
 
 unaryExpression
-    :   ('!' | '+' | '-') unaryExpression
+    :   op=('!' | '+' | '-') unaryExpression
     |   primary
     ;
 

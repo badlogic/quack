@@ -15,26 +15,12 @@ import com.badlogicgames.quack.ast.AstCompilationUnit;
 import com.badlogicgames.quack.ast.AstFunction;
 import com.badlogicgames.quack.ast.AstStruct;
 import com.badlogicgames.quack.ast.utils.AstGraphViz;
-import com.badlogicgames.quack.parsing.ParseException;
-import com.badlogicgames.quack.parsing.Parser;
 
 import static org.junit.Assert.assertTrue;
 
 public class ParserTest {
 	@Test
-	public void testParser() throws ParseException {
-		Parser parser = new Parser(open("test1.qk"));
-		AstCompilationUnit cu = parser.CompilationUnit();
-		for(AstFunction fun: cu.getFunctions()) {
-			System.out.println(AstGraphViz.buildGraphViz(fun));
-		}
-		for(AstStruct str: cu.getStructs()) {
-			System.out.println(AstGraphViz.buildGraphViz(str));
-		}
-	}
-
-	@Test
-	public void testAntlrParser() throws IOException {
+	public void testParser() throws IOException {
 		ErrorHandler errorHandler = new ErrorHandler();
 		AstGenerator astGenerator = new AstGenerator();
 
