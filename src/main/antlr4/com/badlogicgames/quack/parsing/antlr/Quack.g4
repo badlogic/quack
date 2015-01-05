@@ -27,8 +27,8 @@ moduleName
     ;
 
 structDefinition
-    :   'struct' Identifier (genericParameters)? '{'
-            (fieldDeclaration)*
+    :   'struct' name=Identifier (genericParameters)? '{'
+            (variableDeclaration)*
             (functionDefinition)*
         '}'
     ;
@@ -37,17 +37,17 @@ genericParameters
     :   '<' Identifier (',' Identifier)* '>'
     ;
 
-fieldDeclaration
-    :   ('static')? ('val' | 'var') Identifier (':' type)? ('=' expression)?
+variableDeclaration
+    :   ('static')? qualifier=('val' | 'var') name=Identifier (':' type)? ('=' expression)?
     ;
 
 functionDefinition
-    :   'def' (Identifier | arrayOp) (genericParameters)? argumentList (':' type)? '{'
-            functionBody
+    :   'def'name=(Identifier | ArrayOp) (genericParameters)? argumentList (':' type)? '{'
+            statementList
         '}'
     ;
 
-arrayOp
+ArrayOp
     :   ('[]get' | '[]set')
     ;
 
@@ -57,10 +57,6 @@ argumentList
 
 argument
     :   Identifier ':' type ('=' expression)?
-    ;
-
-functionBody
-    :   statementList
     ;
 
 statementList
@@ -75,10 +71,8 @@ statement
     |   forBlock
     |   returnExpression
     |   assignmentOrExpression
-    ;
-
-variableDeclaration
-    :   fieldDeclaration
+    |   'continue'
+    |   'break'
     ;
 
 block
@@ -122,7 +116,7 @@ assignmentOrExpression
 expression
     :   unaryExpression
     |   expression '.' expression
-    |   (genericParameters)? argumentList (':' type)? '{' functionBody '}'
+    |   (genericParameters)? argumentList (':' type)? '{' statementList '}'
     |   expression (genericTypeList)? '(' argumentExpressionList? ')'
     |   expression '[' expression ']'
     |   '(' type ')' expression
@@ -168,7 +162,7 @@ constant
     ;
 
 type
-    :   Identifier (genericTypeList)?
+    :   name=Identifier (genericTypeList)?
     |   genericTypeList? argumentList (':' type)
     ;
 

@@ -3,7 +3,7 @@
 /*
  Multiline comment
 */
-module test
+module my.test.name
 
 import other.mod.name // inline comment
 import another.mod.name /** inline multiline
@@ -84,11 +84,13 @@ def testIf() {
 
 def testWhile() {
 	while(0) {
+		break
 	}
 }
 
 def testFor() {
 	for(var i = 0, var j: i32 = 10; i < 0; i=i+1, j=j+1) {
+		continue
 	}
 }
 

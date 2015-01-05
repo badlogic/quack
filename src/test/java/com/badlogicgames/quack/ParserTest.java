@@ -3,6 +3,7 @@ package com.badlogicgames.quack;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.badlogicgames.quack.ast.AstGenerator;
 import com.badlogicgames.quack.parsing.ErrorHandler;
 import com.badlogicgames.quack.parsing.antlr.QuackLexer;
 import com.badlogicgames.quack.parsing.antlr.QuackParser;
@@ -34,12 +35,23 @@ public class ParserTest {
 
 	@Test
 	public void testAntlrParser() throws IOException {
-		ANTLRInputStream stream = new ANTLRInputStream(open("test1.qk"));
 		ErrorHandler errorHandler = new ErrorHandler();
-		QuackLexer lexer = new QuackLexer(stream);
+		AstGenerator astGenerator = new AstGenerator();
+
+		QuackLexer lexer = new QuackLexer(new ANTLRInputStream(open("test1.qk")));
 		QuackParser parser = new QuackParser(new CommonTokenStream(lexer));
-		// parser.setErrorHandler(errorHandler);
+		parser.setErrorHandler(errorHandler);
+		parser.addParseListener(astGenerator);
 		parser.compilationUnit();
+
+		AstCompilationUnit cu = astGenerator.getCompilationUnit();
+		System.out.println(AstGraphViz.buildGraphViz(cu));
+//		for(AstFunction fun: cu.getFunctions()) {
+//			System.out.println(AstGraphViz.buildGraphViz(fun));
+//		}
+//		for(AstStruct str: cu.getStructs()) {
+//			System.out.println(AstGraphViz.buildGraphViz(str));
+//		}
 	}
 	
 	private static InputStream open(String file) {
