@@ -120,11 +120,12 @@ assignmentOrExpression
     ;
 
 expression
-    :   unaryExpression                                                     
+    :   unaryExpression
     |   expression '.' expression
     |   (genericParameters)? argumentList (':' type)? '{' functionBody '}'
     |   expression (genericTypeList)? '(' argumentExpressionList? ')'
     |   expression '[' expression ']'
+    |   '(' type ')' expression
     |   expression ('*' | '/' | '%') expression
     |   expression ('+' | '-') expression
     |   expression ('<' '<' | '>' '>') expression
