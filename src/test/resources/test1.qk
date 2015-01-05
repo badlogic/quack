@@ -107,7 +107,7 @@ def expressions() {
 	i = 0
 	j = 10
 	
-	a + -b * 2 / 2 % 2 - 10 shl 2 + 2 shl 1
+	a + -b * 2 / 2 % 2 - 10 << 2 + 2 >> 1
 	
 	a && b || !c
 	

@@ -38,7 +38,7 @@ public class ParserTest {
 		ErrorHandler errorHandler = new ErrorHandler();
 		QuackLexer lexer = new QuackLexer(stream);
 		QuackParser parser = new QuackParser(new CommonTokenStream(lexer));
-		parser.setErrorHandler(errorHandler);
+		// parser.setErrorHandler(errorHandler);
 		parser.compilationUnit();
 	}
 	
