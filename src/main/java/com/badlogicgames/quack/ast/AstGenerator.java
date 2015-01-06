@@ -1,5 +1,6 @@
 package com.badlogicgames.quack.ast;
 
+import com.badlogicgames.quack.parsing.ParserException;
 import com.badlogicgames.quack.parsing.QuackAdapter;
 import com.badlogicgames.quack.parsing.antlr.QuackParser;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -15,7 +16,7 @@ public class AstGenerator extends QuackAdapter {
         public Object get(Object key) {
             Object result = super.get(key);
             if(result == null) {
-                throw new RuntimeException("Couldn't retrieve AST node for: " + key);
+                throw new ParserException("Couldn't retrieve AST node for: " + key);
             }
             return result;
         }
@@ -176,7 +177,7 @@ public class AstGenerator extends QuackAdapter {
             AstBreak brk = new AstBreak(ctx.brk.getLine(), ctx.brk.getCharPositionInLine());
             lookup.put(ctx, brk);
         } else {
-            throw new RuntimeException("Unknown statement: " + ctx.getText());
+            throw new ParserException("Unknown statement: " + ctx.getText());
         }
     }
 
@@ -266,16 +267,17 @@ public class AstGenerator extends QuackAdapter {
     @Override
     public void exitDereference(@NotNull QuackParser.DereferenceContext ctx) {
         AstDereference deref = new AstDereference(ctx.start.getLine(), ctx.start.getCharPositionInLine());
-        deref.setTarget((AstExpression) lookup.get(ctx.expression(0)));
-        deref.setElement((AstReference) lookup.get(ctx.expression(1)));
+        deref.setTarget((AstExpression) lookup.get(ctx.expression()));
+        AstReference ref = new AstReference(ctx.Identifier().getSymbol().getLine(), ctx.Identifier().getSymbol().getCharPositionInLine());
+        deref.setElement(ref);
         lookup.put(ctx, deref);
     }
 
     @Override
     public void exitAnonymousFunction(@NotNull QuackParser.AnonymousFunctionContext ctx) {
         AstAnonymousFunction fun = new AstAnonymousFunction(ctx.start.getLine(), ctx.start.getCharPositionInLine());
-        if(ctx.genericParameters() != null) {
-            fun.getGenericParameters().addAll((Collection<? extends String>) lookup.get(ctx.genericParameters()));
+        if(ctx.genericTypeList() != null) {
+            fun.getGenericTypes().addAll((Collection<? extends AstType>) lookup.get(ctx.genericTypeList()));
         }
         fun.getArguments().addAll((Collection<? extends AstArgument>) lookup.get(ctx.argumentList()));
         if(ctx.type() != null) {
@@ -372,7 +374,7 @@ public class AstGenerator extends QuackAdapter {
         } else if(ctx.qualifier.getText().equals("var")) {
             var.setQualifier(AstVariableDeclaration.Qualifier.Var);
         } else {
-            throw new RuntimeException("Unknown qualifier: " + ctx.qualifier.getText());
+            throw new ParserException("Unknown qualifier: " + ctx.qualifier.getText());
         }
         var.setName(ctx.name.getText());
         if(ctx.type() != null) {

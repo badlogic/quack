@@ -5,6 +5,7 @@ import java.io.InputStream;
 
 import com.badlogicgames.quack.ast.AstGenerator;
 import com.badlogicgames.quack.parsing.ErrorHandler;
+import com.badlogicgames.quack.parsing.Parser;
 import com.badlogicgames.quack.parsing.antlr.QuackLexer;
 import com.badlogicgames.quack.parsing.antlr.QuackParser;
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -21,16 +22,8 @@ import static org.junit.Assert.assertTrue;
 public class ParserTest {
 	@Test
 	public void testParser() throws IOException {
-		ErrorHandler errorHandler = new ErrorHandler();
-		AstGenerator astGenerator = new AstGenerator();
-
-		QuackLexer lexer = new QuackLexer(new ANTLRInputStream(open("test1.qk")));
-		QuackParser parser = new QuackParser(new CommonTokenStream(lexer));
-		parser.setErrorHandler(errorHandler);
-		parser.addParseListener(astGenerator);
-		parser.compilationUnit();
-
-		AstCompilationUnit cu = astGenerator.getCompilationUnit();
+		Parser parser = new Parser();
+		AstCompilationUnit cu = parser.parse(open("test1.qk"));
 		System.out.println(AstGraphViz.buildGraphViz(cu));
 //		for(AstFunction fun: cu.getFunctions()) {
 //			System.out.println(AstGraphViz.buildGraphViz(fun));

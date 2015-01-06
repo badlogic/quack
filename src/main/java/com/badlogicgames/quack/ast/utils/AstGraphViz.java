@@ -81,7 +81,7 @@ public class AstGraphViz {
 		} else if(node instanceof AstImport) {
 			return "Import " + ((AstImport)node).getName();
 		} else if(node instanceof AstLiteral) {
-			return ((AstLiteral)node).getValue();
+			return ((AstLiteral)node).getValue().replace("\"", "\\\"");
 		} else if(node instanceof AstModule) {
 			return "Module " + ((AstModule)node).getName();
 		} else if(node instanceof AstReference) {

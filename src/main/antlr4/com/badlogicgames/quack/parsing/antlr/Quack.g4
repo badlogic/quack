@@ -34,7 +34,7 @@ structDefinition
     ;
 
 genericParameters
-    :   '<' Identifier (',' Identifier)* '>'
+    :   '{' Identifier (',' Identifier)* '}'
     ;
 
 variableDeclaration
@@ -115,8 +115,8 @@ assignmentOrExpression
 
 expression
     :   unaryExpression                                                        #Unary
-    |   expression '.' expression                                              #Dereference
-    |   (genericParameters)? argumentList (':' type)? '{' statementList '}'    #AnonymousFunction
+    |   (genericTypeList)? argumentList (':' type)? '{' statementList '}'      #AnonymousFunction
+    |   expression '.' Identifier                                              #Dereference
     |   expression (genericTypeList)? '(' argumentExpressionList? ')'          #Call
     |   expression '[' expression ']'                                          #ArrayAccess
     |   '(' type ')' expression                                                #Cast
@@ -151,7 +151,7 @@ argumentExpression
     ;
 
 genericTypeList
-    :   '<' type (',' type)* '>'
+    :   '{' type (',' type)* '}'
     ;
 
 primary

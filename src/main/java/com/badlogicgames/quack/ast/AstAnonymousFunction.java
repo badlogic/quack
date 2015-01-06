@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AstAnonymousFunction extends AstExpression {
-	private final List<String> genericTypes = new ArrayList<>();
+	private final List<AstType> genericTypes = new ArrayList<>();
 	private AstType returnType;
 	private final List<AstArgument> arguments = new ArrayList<>();
 	private final List<AstStatement> body = new ArrayList<>();
@@ -14,7 +14,7 @@ public class AstAnonymousFunction extends AstExpression {
 		super(line, col);
 	}
 
-	public List<String> getGenericParameters() {
+	public List<AstType> getGenericTypes() {
 		return genericTypes;
 	}
 
