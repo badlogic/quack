@@ -1,5 +1,6 @@
 package com.badlogicgames.quack.ast;
 
+import com.badlogicgames.quack.parsing.ErrorHandler;
 import com.badlogicgames.quack.parsing.ParserException;
 import com.badlogicgames.quack.parsing.QuackAdapter;
 import com.badlogicgames.quack.parsing.antlr.QuackParser;
@@ -10,6 +11,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import java.util.*;
 
 public class AstGenerator extends QuackAdapter {
+    private final ErrorHandler errorHandler;
     private AstCompilationUnit cu;
     private Map<ParserRuleContext, Object> lookup = new HashMap<ParserRuleContext, Object>() {
         @Override
@@ -21,6 +23,10 @@ public class AstGenerator extends QuackAdapter {
             return result;
         }
     };
+
+    public AstGenerator(ErrorHandler errorHandler) {
+        this.errorHandler = errorHandler;
+    }
 
     public AstCompilationUnit getCompilationUnit() {
         return cu;

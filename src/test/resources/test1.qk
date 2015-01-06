@@ -191,7 +191,9 @@ def funcPtr(f: (): i32, a: i32) {
 	var i: (i: i32, u: i32): i32 = (i: i32, u: i32): i32 { }
 }
 
-def genFunPtr[T, V](f: {T}(i: T, e: T): T) {
+			fufuafhjdhjashjjh
+
+def genFunPtr{T, V}(f: {T}(i: T, e: T): T) {
 	var i: {T, V}(i: T, u: V): T = 0
 	var v = {T, V}(i: T, u: V): T { }
 }
