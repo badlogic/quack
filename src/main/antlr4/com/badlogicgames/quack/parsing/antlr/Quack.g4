@@ -115,18 +115,18 @@ assignmentOrExpression
 
 expression
     :   unaryExpression                                                        #Unary
-    |   expression '.' expression                                              #FieldDereference
+    |   expression '.' expression                                              #Dereference
     |   (genericParameters)? argumentList (':' type)? '{' statementList '}'    #AnonymousFunction
     |   expression (genericTypeList)? '(' argumentExpressionList? ')'          #Call
     |   expression '[' expression ']'                                          #ArrayAccess
     |   '(' type ')' expression                                                #Cast
-    |   expression op=('*' | '/' | '%') expression                                #BinaryOp
-    |   expression op=('+' | '-') expression                                      #BinaryOp
-    |   expression (shl | shr) expression                              #BinaryOp
-    |   expression op=('<' | '>' | '<=' | '>=') expression                        #BinaryOp
-    |   expression op=('&' | '|' | '^') expression                                #BinaryOp
-    |   expression op=('||' | '&&') expression                                    #BinaryOp
-    |   expression op=('==' | '!=') expression                                    #BinaryOp
+    |   expression op=('*' | '/' | '%') expression                             #BinaryOp
+    |   expression op=('+' | '-') expression                                   #BinaryOp
+    |   expression (shl | shr) expression                                      #BinaryOp
+    |   expression op=('<' | '>' | '<=' | '>=') expression                     #BinaryOp
+    |   expression op=('&' | '|' | '^') expression                             #BinaryOp
+    |   expression op=('||' | '&&') expression                                 #BinaryOp
+    |   expression op=('==' | '!=') expression                                 #BinaryOp
     ;
 
 shl

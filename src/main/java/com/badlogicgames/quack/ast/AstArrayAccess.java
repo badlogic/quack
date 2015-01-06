@@ -1,10 +1,10 @@
 package com.badlogicgames.quack.ast;
 
-public class AstArrayLookup extends AstExpression {
+public class AstArrayAccess extends AstExpression {
 	private AstExpression array;
 	private AstExpression index;
 	
-	public AstArrayLookup (int line, int col) {
+	public AstArrayAccess(int line, int col) {
 		super(line, col);
 	}
 

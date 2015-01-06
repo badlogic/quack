@@ -173,7 +173,7 @@ public class AstGenerator extends QuackAdapter {
             AstContinue cont = new AstContinue(ctx.cont.getLine(), ctx.cont.getCharPositionInLine());
             lookup.put(ctx, cont);
         } else if(ctx.brk != null) {
-            AstBreak brk = new AstBreak(ctx.brk.getLine(), ctx.cont.getCharPositionInLine());
+            AstBreak brk = new AstBreak(ctx.brk.getLine(), ctx.brk.getCharPositionInLine());
             lookup.put(ctx, brk);
         } else {
             throw new RuntimeException("Unknown statement: " + ctx.getText());
@@ -235,6 +235,11 @@ public class AstGenerator extends QuackAdapter {
     }
 
     @Override
+    public void exitUnary(@NotNull QuackParser.UnaryContext ctx) {
+        lookup.put(ctx, lookup.get(ctx.unaryExpression()));
+    }
+
+    @Override
     public void exitIfBlock(@NotNull QuackParser.IfBlockContext ctx) {
         AstIf ifBlock = new AstIf(ctx.start.getLine(), ctx.start.getCharPositionInLine());
         ifBlock.setCondition((AstExpression) lookup.get(ctx.expression()));
@@ -259,28 +264,54 @@ public class AstGenerator extends QuackAdapter {
     }
 
     @Override
-    public void exitFieldDereference(@NotNull QuackParser.FieldDereferenceContext ctx) {
-
+    public void exitDereference(@NotNull QuackParser.DereferenceContext ctx) {
+        AstDereference deref = new AstDereference(ctx.start.getLine(), ctx.start.getCharPositionInLine());
+        deref.setTarget((AstExpression) lookup.get(ctx.expression(0)));
+        deref.setElement((AstReference) lookup.get(ctx.expression(1)));
+        lookup.put(ctx, deref);
     }
 
     @Override
     public void exitAnonymousFunction(@NotNull QuackParser.AnonymousFunctionContext ctx) {
-
+        AstAnonymousFunction fun = new AstAnonymousFunction(ctx.start.getLine(), ctx.start.getCharPositionInLine());
+        if(ctx.genericParameters() != null) {
+            fun.getGenericParameters().addAll((Collection<? extends String>) lookup.get(ctx.genericParameters()));
+        }
+        fun.getArguments().addAll((Collection<? extends AstArgument>) lookup.get(ctx.argumentList()));
+        if(ctx.type() != null) {
+            fun.setReturnType((AstType) lookup.get(ctx.type()));
+        }
+        fun.getBody().addAll((Collection<? extends AstStatement>) lookup.get(ctx.statementList()));
+        lookup.put(ctx, fun);
     }
 
     @Override
     public void exitCall(@NotNull QuackParser.CallContext ctx) {
-        
+        AstCall call = new AstCall(ctx.start.getLine(), ctx.start.getCharPositionInLine());
+        call.setTarget((AstExpression) lookup.get(ctx.expression()));
+        if(ctx.genericTypeList() != null) {
+            call.getGenericTypes().addAll((Collection<? extends AstType>) lookup.get(ctx.genericTypeList()));
+        }
+        if(ctx.argumentExpressionList() != null) {
+            call.getArguments().addAll((Collection<? extends AstExpression>) lookup.get(ctx.argumentExpressionList()));
+        }
+        lookup.put(ctx, call);
     }
 
     @Override
     public void exitArrayAccess(@NotNull QuackParser.ArrayAccessContext ctx) {
-
+        AstArrayAccess arrayAccess = new AstArrayAccess(ctx.start.getLine(), ctx.start.getCharPositionInLine());
+        arrayAccess.setArray((AstExpression) lookup.get(ctx.expression(0)));
+        arrayAccess.setIndex((AstExpression) lookup.get(ctx.expression(1)));
+        lookup.put(ctx, arrayAccess);
     }
 
     @Override
     public void exitCast(@NotNull QuackParser.CastContext ctx) {
-
+        AstCast cast = new AstCast(ctx.start.getLine(), ctx.start.getCharPositionInLine());
+        cast.setType((AstType) lookup.get(ctx.type()));
+        cast.setExpression((AstExpression) lookup.get(ctx.expression()));
+        lookup.put(ctx, cast);
     }
 
     @Override
@@ -295,6 +326,7 @@ public class AstGenerator extends QuackAdapter {
             binaryOp.setOperator(ctx.op.getText());
         }
         binaryOp.setLeftHandSide((AstExpression) lookup.get(ctx.expression(1)));
+        lookup.put(ctx, binaryOp);
     }
 
     @Override
@@ -302,7 +334,7 @@ public class AstGenerator extends QuackAdapter {
         AstFunction func = new AstFunction(ctx.start.getLine(), ctx.start.getCharPositionInLine());
         func.setName(ctx.name.getText());
         if(ctx.genericParameters() != null) {
-            func.getGenericTypes().addAll((Collection<? extends String>) lookup.get(ctx.genericParameters()));
+            func.getGenericParameters().addAll((Collection<? extends String>) lookup.get(ctx.genericParameters()));
         }
         func.getArguments().addAll((Collection<? extends AstArgument>) lookup.get(ctx.argumentList()));
         if(ctx.type() != null) {

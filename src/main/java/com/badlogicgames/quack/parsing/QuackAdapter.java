@@ -109,12 +109,12 @@ public class QuackAdapter implements QuackListener {
     }
 
     @Override
-    public void enterFieldDereference(@NotNull QuackParser.FieldDereferenceContext ctx) {
+    public void enterDereference(@NotNull QuackParser.DereferenceContext ctx) {
 
     }
 
     @Override
-    public void exitFieldDereference(@NotNull QuackParser.FieldDereferenceContext ctx) {
+    public void exitDereference(@NotNull QuackParser.DereferenceContext ctx) {
 
     }
 

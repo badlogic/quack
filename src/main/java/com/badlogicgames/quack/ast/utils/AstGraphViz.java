@@ -47,12 +47,14 @@ public class AstGraphViz {
 	}
 	
 	private static String getLabel(AstNode node) {
-	// visit any children
-		if(node instanceof AstArgument) {
+		// visit any children
+		if(node instanceof AstAnonymousFunction) {
+			return "Anonymous function";
+		} else if(node instanceof AstArgument) {
 			return " Argument " + ((AstArgument)node).getName() + ": " + ((AstArgument)node).getType().getName();
 		} else if(node instanceof AstArgumentExpression) {
 			return "Arg. Expr." + (((AstArgumentExpression)node).getArgumentName() !=null?"(" + ((AstArgumentExpression)node).getArgumentName() + ")":"");
-		} else if(node instanceof AstArrayLookup) {
+		} else if(node instanceof AstArrayAccess) {
 			return "[]";
 		} else if(node instanceof AstBinaryOp) {
 			return ((AstBinaryOp)node).getOperator().name();
@@ -72,7 +74,7 @@ public class AstGraphViz {
 			return "For";
 		} else if(node instanceof AstFunction) {
 			return "Def " + ((AstFunction)node).getName();
-		} else if(node instanceof AstGetElement) {
+		} else if(node instanceof AstDereference) {
 			return "Get Element";
 		} else if(node instanceof AstIf) {
 			return "If";

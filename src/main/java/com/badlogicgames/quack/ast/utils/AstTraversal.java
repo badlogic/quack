@@ -34,14 +34,22 @@ public class AstTraversal {
 		visitor.visit(parent, node);
 		
 		// visit any children
-		if(node instanceof AstArgument) {
+		if(node instanceof AstAnonymousFunction) {
+			for(AstArgument arg: ((AstAnonymousFunction)node).getArguments()) {
+				walk(visitor, node, arg, excluded);
+			}
+			walk(visitor, node, ((AstAnonymousFunction)node).getReturnType(), excluded);
+			for(AstStatement stmt: ((AstAnonymousFunction)node).getBody()) {
+				walk(visitor, node, stmt, excluded);
+			}
+		} else if(node instanceof AstArgument) {
 			walk(visitor, node, ((AstArgument)node).getType(), excluded);
 			walk(visitor, node, ((AstArgument)node).getDefaultValue(), excluded);			
 		} else if(node instanceof AstArgumentExpression) {
 			walk(visitor, node, ((AstArgumentExpression)node).getExpression(), excluded);
-		} else if(node instanceof AstArrayLookup) {		
-			walk(visitor, node, ((AstArrayLookup)node).getArray(), excluded);
-			walk(visitor, node, ((AstArrayLookup)node).getIndex(), excluded);
+		} else if(node instanceof AstArrayAccess) {
+			walk(visitor, node, ((AstArrayAccess)node).getArray(), excluded);
+			walk(visitor, node, ((AstArrayAccess)node).getIndex(), excluded);
 		} else if(node instanceof AstBinaryOp) {
 			walk(visitor, node, ((AstBinaryOp)node).getLeftHandSide(), excluded);
 			walk(visitor, node, ((AstBinaryOp)node).getRightHandSide(), excluded);
@@ -92,9 +100,9 @@ public class AstTraversal {
 			for(AstStatement stmt: ((AstFunction)node).getBody()) {
 				walk(visitor, node, stmt, excluded);
 			}
-		} else if(node instanceof AstGetElement) {
-			walk(visitor, node, ((AstGetElement)node).getTarget(), excluded);
-			walk(visitor, node, ((AstGetElement)node).getElement(), excluded);
+		} else if(node instanceof AstDereference) {
+			walk(visitor, node, ((AstDereference)node).getTarget(), excluded);
+			walk(visitor, node, ((AstDereference)node).getElement(), excluded);
 		} else if(node instanceof AstIf) {
 			walk(visitor, node, ((AstIf)node).getCondition(), excluded);
 			walk(visitor, node, ((AstIf)node).getTrueBlock(), excluded);
@@ -135,6 +143,8 @@ public class AstTraversal {
 		} else if(node instanceof AstWhile) {
 			walk(visitor, node, ((AstWhile)node).getCondition(), excluded);
 			walk(visitor, node, ((AstWhile)node).getBlock(), excluded);
+		} else {
+			throw new RuntimeException("Unknown AST node: " + node);
 		}
 	}
 }

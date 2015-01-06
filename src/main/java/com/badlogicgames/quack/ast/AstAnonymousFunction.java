@@ -4,25 +4,16 @@ package com.badlogicgames.quack.ast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AstFunction extends AstNode {
-	private String name;
+public class AstAnonymousFunction extends AstExpression {
 	private final List<String> genericTypes = new ArrayList<>();
 	private AstType returnType;
 	private final List<AstArgument> arguments = new ArrayList<>();
 	private final List<AstStatement> body = new ArrayList<>();
 
-	public AstFunction (int line, int col) {
+	public AstAnonymousFunction(int line, int col) {
 		super(line, col);
 	}
 
-	public String getName () {
-		return name;
-	}
-
-	public void setName (String name) {
-		this.name = name;
-	}
-	
 	public List<String> getGenericParameters() {
 		return genericTypes;
 	}

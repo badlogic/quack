@@ -1,10 +1,10 @@
 package com.badlogicgames.quack.ast;
 
-public class AstGetElement extends AstExpression {
+public class AstDereference extends AstExpression {
 	private AstExpression target;
-	private AstReference element;
+	private AstExpression element;
 	
-	public AstGetElement (int line, int col) {
+	public AstDereference(int line, int col) {
 		super(line, col);
 	}
 
@@ -16,7 +16,7 @@ public class AstGetElement extends AstExpression {
 		this.target = target;
 	}
 
-	public AstReference getElement () {
+	public AstExpression getElement() {
 		return element;
 	}
 
