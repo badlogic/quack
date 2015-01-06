@@ -1,5 +1,7 @@
 package com.badlogicgames.quack.ast;
 
+import java.util.Objects;
+
 public class AstCast extends AstExpression {
     private AstType type;
     private AstExpression expression;
@@ -22,5 +24,25 @@ public class AstCast extends AstExpression {
 
     public void setExpression (AstExpression expression) {
         this.expression = expression;
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * super.hashCode() + Objects.hash(type, expression);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        final AstCast other = (AstCast) obj;
+        return Objects.equals(this.type, other.type) && Objects.equals(this.expression, other.expression);
     }
 }

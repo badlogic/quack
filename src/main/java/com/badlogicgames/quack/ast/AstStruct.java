@@ -3,6 +3,7 @@ package com.badlogicgames.quack.ast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class AstStruct extends AstNode {
 	private String name;
@@ -32,5 +33,25 @@ public class AstStruct extends AstNode {
 
 	public List<AstFunction> getFunctions () {
 		return functions;
+	}
+
+	@Override
+	public int hashCode() {
+		return 31 * super.hashCode() + Objects.hash(name, genericTypes, fields, functions);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		final AstStruct other = (AstStruct) obj;
+		return Objects.equals(this.name, other.name) && Objects.equals(this.genericTypes, other.genericTypes) && Objects.equals(this.fields, other.fields) && Objects.equals(this.functions, other.functions);
 	}
 }

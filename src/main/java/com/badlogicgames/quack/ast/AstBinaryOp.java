@@ -1,5 +1,7 @@
 package com.badlogicgames.quack.ast;
 
+import java.util.Objects;
+
 public class AstBinaryOp extends AstExpression {
 	public static enum Operator {
 		Assign,
@@ -83,5 +85,25 @@ public class AstBinaryOp extends AstExpression {
 
 	public void setOperator (Operator operator) {
 		this.operator = operator;
+	}
+
+	@Override
+	public int hashCode() {
+		return 31 * super.hashCode() + Objects.hash(leftHandSide, rightHandSide, operator);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		final AstBinaryOp other = (AstBinaryOp) obj;
+		return Objects.equals(this.leftHandSide, other.leftHandSide) && Objects.equals(this.rightHandSide, other.rightHandSide) && Objects.equals(this.operator, other.operator);
 	}
 }

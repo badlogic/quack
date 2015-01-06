@@ -2,6 +2,7 @@ package com.badlogicgames.quack.ast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class AstIf extends AstStatement {
 	private AstExpression condition;
@@ -43,5 +44,25 @@ public class AstIf extends AstStatement {
 
 	public void setElseBlock (AstBlock elseBlock) {
 		this.elseBlock = elseBlock;
+	}
+
+	@Override
+	public int hashCode() {
+		return 31 * super.hashCode() + Objects.hash(condition, trueBlock, elseIfs, elseBlock);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		final AstIf other = (AstIf) obj;
+		return Objects.equals(this.condition, other.condition) && Objects.equals(this.trueBlock, other.trueBlock) && Objects.equals(this.elseIfs, other.elseIfs) && Objects.equals(this.elseBlock, other.elseBlock);
 	}
 }

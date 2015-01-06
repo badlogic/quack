@@ -1,5 +1,7 @@
 package com.badlogicgames.quack.ast;
 
+import java.util.Objects;
+
 public class AstUnaryOp extends AstExpression {
 	public static enum Operator {
 		Not,
@@ -46,5 +48,25 @@ public class AstUnaryOp extends AstExpression {
 
 	public void setExpression (AstExpression expression) {
 		this.expression = expression;
+	}
+
+	@Override
+	public int hashCode() {
+		return 31 * super.hashCode() + Objects.hash(operator, expression);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		final AstUnaryOp other = (AstUnaryOp) obj;
+		return Objects.equals(this.operator, other.operator) && Objects.equals(this.expression, other.expression);
 	}
 }

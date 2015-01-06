@@ -1,6 +1,8 @@
 
 package com.badlogicgames.quack.ast;
 
+import java.util.Objects;
+
 public class AstVariableDeclaration extends AstStatement {
 	public static enum Qualifier {
 		Val,
@@ -55,5 +57,25 @@ public class AstVariableDeclaration extends AstStatement {
 
 	public void setInitializer (AstExpression initializer) {
 		this.initializer = initializer;
+	}
+
+	@Override
+	public int hashCode() {
+		return 31 * super.hashCode() + Objects.hash(isStatic, qualifier, name, type, initializer);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		final AstVariableDeclaration other = (AstVariableDeclaration) obj;
+		return Objects.equals(this.isStatic, other.isStatic) && Objects.equals(this.qualifier, other.qualifier) && Objects.equals(this.name, other.name) && Objects.equals(this.type, other.type) && Objects.equals(this.initializer, other.initializer);
 	}
 }
